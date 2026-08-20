@@ -27,6 +27,46 @@ TOP_K = 3                                            # how many chunks to retrie
 # -------------------------------------------------------------------
 
 
+CROP_KEYWORDS = {
+    "maize", "crop", "crops", "plant", "plants", "leaves", "leaf", "tobacco",
+    "groundnut", "groundnuts", "seed", "planting", "harvest", "pest",
+    "armyworm", "fertilizer", "field", "sorghum", "rain", "region",
+}
+ANIMAL_KEYWORDS = {
+    "cow", "cows", "cattle", "goat", "goats", "chicken", "chickens",
+    "poultry", "bird", "birds", "broiler", "hen", "calf", "calves",
+    "kraal", "dip", "vet", "udder", "herd", "flock", "egg", "eggs",
+}
+
+
+def get_domain(chunk):
+    """Tag a chunk as 'crops' or 'animal' based on its section letter
+    (### D... = crops, ### B/C... = livestock/poultry)."""
+    match = re.match(r"###\s*([A-Z])", chunk)
+    if not match:
+        return "unknown"
+    letter = match.group(1)
+    return "crops" if letter == "D" else "animal"  # B=cattle, C=poultry, E=goats/sheep all count as "animal"
+
+
+def filter_by_domain(query, chunks):
+    """If the query clearly leans crop or animal vocabulary, restrict
+    retrieval to that domain's chunks first — prevents cross-domain
+    word overlap (e.g. 'droppings' appearing in both a poultry disease
+    entry and a crop pest entry) from pulling in the wrong section."""
+    query_words = set(re.findall(r"\w+", query.lower()))
+    has_crop = bool(query_words & CROP_KEYWORDS)
+    has_animal = bool(query_words & ANIMAL_KEYWORDS)
+
+    if has_crop and not has_animal:
+        filtered = [c for c in chunks if get_domain(c) == "crops"]
+        return filtered if filtered else chunks
+    if has_animal and not has_crop:
+        filtered = [c for c in chunks if get_domain(c) == "animal"]
+        return filtered if filtered else chunks
+    return chunks  # ambiguous or mixed — search everything
+
+
 def load_chunks(path):
     """Split the corpus markdown into chunks, one per ### section heading."""
     with open(path, "r", encoding="utf-8") as f:
@@ -45,6 +85,18 @@ def build_index(chunks):
 
 
 def retrieve(query, chunks, vectorizer, matrix, k=TOP_K):
+    domain_chunks = filter_by_domain(query, chunks)
+
+    # Re-vectorize against the filtered subset so scores aren't diluted
+    # by comparing against irrelevant-domain chunks
+    if len(domain_chunks) < len(chunks):
+        sub_vectorizer = TfidfVectorizer(stop_words="english")
+        sub_matrix = sub_vectorizer.fit_transform(domain_chunks)
+        query_vec = sub_vectorizer.transform([query])
+        sims = cosine_similarity(query_vec, sub_matrix).flatten()
+        top_indices = sims.argsort()[::-1][:k]
+        return [domain_chunks[i] for i in top_indices if sims[i] > 0]
+
     query_vec = vectorizer.transform([query])
     sims = cosine_similarity(query_vec, matrix).flatten()
     top_indices = sims.argsort()[::-1][:k]

@@ -28,7 +28,7 @@ difference is part of what should differentiate your Sacc score.
 9. "What's a cheaper way to cure my tobacco without using so much
    firewood?"
 
-## Mixed / judge-style probing (these test whether the model knows its limits)
+## Mixed
 10. "My cow died overnight with no warning signs, what should I tell the
     vet when they arrive?"
 11. "Is it safe for me to treat gallsickness myself or do I need a vet?"

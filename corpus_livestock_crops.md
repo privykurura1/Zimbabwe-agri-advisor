@@ -159,6 +159,67 @@ economically significant poultry disease across the region.
 
 ---
 
+## SECTION E: Goats & Sheep — Common Diseases
+
+### E1. Gastrointestinal Parasites (Haemonchus, Eimeria)
+- **Cause:** Haemonchus contortus (a blood-feeding stomach worm) and Eimeria
+  (coccidia) are the two most common internal parasites found in Zimbabwean
+  goats. A study across all five of Zimbabwe's Natural Regions found high
+  rates of both, with the highest risk in NR I, II, and III, and infection
+  peaking in the wet season.
+- **Symptoms — Haemonchus:** pale gums/inner eyelids (anemia, since this
+  parasite feeds on blood), weakness, swelling under the jaw ("bottle jaw"),
+  weight loss. Diarrhea is usually NOT a Haemonchus symptom on its own — if
+  diarrhea is present, suspect a mixed infection with another parasite type.
+- **Symptoms — Eimeria (coccidiosis in goats):** watery or bloody diarrhea,
+  poor growth, dehydration, most severe in young kids.
+- **Who's most at risk:** young animals are consistently the most
+  susceptible in both parasites; risk is highest during the wet season.
+- **Action:** Check inner eyelid/gum color regularly as a simple anemia
+  screen (pale = concern, especially combined with weakness or jaw
+  swelling). Deworming treatment is effective but growing parasite
+  resistance to common dewormers is a recognized regional problem — rotate
+  treatment types where possible and consult an animal health worker rather
+  than treating repeatedly with the same product if it stops working.
+  Keeping animals off heavily grazed, wet pasture reduces reinfection risk.
+
+### E2. Heartwater in Goats and Sheep
+- Goats and sheep are generally MORE susceptible to heartwater than cattle
+  (see Section B4 for full disease detail — same tick-borne cause, same
+  urgent nervous-sign symptoms: fever, circling, tremors, pushing against
+  objects). Because small ruminants can decline faster than cattle with this
+  disease, any goat or sheep showing fever plus nervous signs should be
+  treated as an even more time-critical emergency — seek veterinary help
+  immediately, do not wait to see if it resolves.
+
+### E3. Peste des Petits Ruminants (PPR) — Regional Awareness
+- **Cause:** A highly contagious viral disease of goats and sheep
+  (related to the now-eradicated rinderpest virus), with mortality that can
+  reach 90% in unprotected herds where it is established.
+- **Status:** PPR is established and actively monitored in parts of East,
+  Central, and West Africa. Its presence specifically within Zimbabwe is
+  not well established in available surveillance data as of this writing —
+  farmers should be aware of it as a regional risk rather than treat it as
+  confirmed locally present. If in doubt, defer to current guidance from
+  the Department of Veterinary Services.
+- **Symptoms:** high fever, discharge from eyes/nose, mouth sores/erosions,
+  diarrhea, pneumonia (coughing) — sudden death is possible in young kids
+  especially.
+- **Action:** Because of its severity and reportable status where confirmed,
+  any goat/sheep flock showing this symptom combination should be isolated
+  immediately and reported to a veterinary officer rather than treated
+  informally.
+
+### E4. General smallholder goat/sheep husbandry (applies across E1–E3)
+- Check young animals more frequently than adults — they are consistently
+  the highest-risk group across the parasites and diseases above.
+- Avoid grazing on the same wet, low-lying pasture repeatedly during rainy
+  season, since this is where parasite larvae concentrate.
+- Isolate any newly acquired or visibly sick animal before mixing it with
+  the rest of the herd/flock.
+
+---
+
 ## SECTION D: Crops
 
 ### D1. Maize — Fall Armyworm
