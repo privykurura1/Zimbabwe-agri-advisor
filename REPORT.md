@@ -1,6 +1,6 @@
 # Technical Report — Offline AI Farming Advisor for Zimbabwe
 
-**Team ID:** 
+**Team ID:** privy001
 **Domain:** agriculture
 **Model:** Qwen2.5-3B-Instruct-Q4_K_M
 
