@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mudimu — Offline Farm Advisor</title>
+
+<!-- Simple leaf-mark favicon, inline so the app stays a single offline file -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%232f4a34'/%3E%3Cpath d='M50 78 L50 40 M50 40 C30 40 22 24 26 12 C42 16 50 28 50 40 M50 40 C70 40 78 24 74 12 C58 16 50 28 50 40' stroke='%23f2eeda' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<!-- React + Babel via CDN — no npm/build step required.
+     These are only needed once to load this page; after that,
+     everything else (the actual advice) runs fully offline
+     against your local backend. -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  :root {
+    --paper: #f2eeda;
+    --paper-line: #d9d3b8;
+    --ink: #221f18;
+    --ink-soft: #5a5544;
+    --field-green: #2f4a34;
+    --field-green-dark: #1e3123;
+    --urgent: #a33b28;
+    --urgent-bg: #f4e2dc;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 720px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 43px,
+      var(--paper-line) 43px,
+      var(--paper-line) 44px
+    );
+  }
+
+  header {
+    padding: 28px 24px 20px;
+    border-bottom: 2px solid var(--field-green);
+    background: var(--paper);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  .wordmark {
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--field-green-dark);
+    margin: 0;
+    letter-spacing: 0.2px;
+  }
+
+  .subtitle {
+    margin: 4px 0 0;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--field-green-dark);
+  }
+
+  .status .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--field-green);
+  }
+  .status.offline .dot { background: #999; }
+
+  main {
+    flex: 1;
+    padding: 20px 24px 12px;
+    overflow-y: auto;
+  }
+
+  .empty-state {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-top: 30px;
+  }
+  .empty-state .examples {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .example-btn {
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid var(--paper-line);
+    padding: 6px 0 6px 12px;
+    color: var(--field-green-dark);
+    font-size: 14.5px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .example-btn:hover { border-left-color: var(--field-green); }
+
+  .entry { margin-bottom: 26px; }
+
+  .entry-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+
+  .q-block {
+    border-left: 3px solid var(--ink-soft);
+    padding-left: 12px;
+    font-size: 16px;
+  }
+
+  .a-block {
+    border-left: 3px solid var(--field-green);
+    padding-left: 12px;
+    margin-top: 14px;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .a-block.urgent {
+    border-left-color: var(--urgent);
+  }
+
+  .urgent-tag {
+    display: inline-block;
+    background: var(--urgent-bg);
+    color: var(--urgent);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+  }
+
+  .answer-text {
+    font-size: 15px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+  }
+
+  .sources {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .source-tag {
+    font-size: 11.5px;
+    color: var(--field-green-dark);
+    background: rgba(47, 74, 52, 0.08);
+    border: 1px solid rgba(47, 74, 52, 0.2);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  .thinking {
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-style: italic;
+    padding-left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .thinking .pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--field-green);
+    animation: pulse 1.2s infinite ease-in-out;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .error-block {
+    border-left: 3px solid var(--urgent);
+    padding-left: 12px;
+    color: var(--urgent);
+    font-size: 14px;
+  }
+
+  footer {
+    padding: 16px 24px 24px;
+    background: var(--paper);
+    border-top: 1px solid var(--paper-line);
+  }
+
+  form {
+    display: flex;
+    gap: 8px;
+  }
+
+  textarea {
+    flex: 1;
+    resize: none;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fffdf7;
+    color: var(--ink);
+    min-height: 46px;
+    max-height: 120px;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--field-green);
+  }
+
+  button.ask-btn {
+    background: var(--field-green);
+    color: #fdfbf3;
+    border: none;
+    border-radius: 4px;
+    padding: 0 22px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  button.ask-btn:hover { background: var(--field-green-dark); }
+  button.ask-btn:disabled {
+    background: #a9a58f;
+    cursor: not-allowed;
+  }
+
+  .hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+// Change this if your backend runs on a different port.
+const API_URL = "http://localhost:8000";
+
+const EXAMPLE_QUESTIONS = [
+  "My cow has a high fever and keeps pushing its head against the kraal post, walking in circles",
+  "There are ragged holes and droppings in the middle of my young maize plants, what's eating them?",
+  "My goat's under-jaw is swollen and its eyelids look pale, is it worms?",
+];
+
+function isUrgent(answerText) {
+  const t = answerText.toLowerCase();
+  return t.includes("emergency") || t.includes("immediately") || t.includes("urgent");
+}
+
+function App() {
+  const [entries, setEntries] = useState([]);
+  const [question, setQuestion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [backendOnline, setBackendOnline] = useState(null);
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/health`)
+      .then((r) => r.ok && setBackendOnline(true))
+      .catch(() => setBackendOnline(false));
+  }, []);
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = mainRef.current.scrollHeight;
+    }
+  }, [entries, loading]);
+
+  async function submitQuestion(q) {
+    if (!q.trim() || loading) return;
+    setQuestion("");
+    setLoading(true);
+    setEntries((prev) => [
+      ...prev,
+      { type: "question", text: q },
+      { type: "answer", text: "", sources: [] },
+    ]);
+
+    try {
+      const res = await fetch(`${API_URL}/api/ask/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q }),
+      });
+      if (!res.ok || !res.body) throw new Error("Backend returned an error");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let sourcesParsed = false;
+      let leftover = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        let chunk = decoder.decode(value, { stream: true });
+
+        if (!sourcesParsed) {
+          leftover += chunk;
+          const newlineIdx = leftover.indexOf("\n");
+          if (newlineIdx === -1) continue; // keep buffering until we see the sources line
+          const firstLine = leftover.slice(0, newlineIdx);
+          chunk = leftover.slice(newlineIdx + 1); // remainder becomes the first real chunk
+          sourcesParsed = true;
+
+          let sources = [];
+          if (firstLine.startsWith("SOURCES:::")) {
+            try {
+              sources = JSON.parse(firstLine.replace("SOURCES:::", ""));
+            } catch (e) {}
+          }
+          setEntries((prev) => {
+            const updated = [...prev];
+            const last = updated[updated.length - 1];
+            updated[updated.length - 1] = { ...last, sources };
+            return updated;
+          });
+        }
+
+        if (chunk) {
+          setEntries((prev) => {
+            const updated = [...prev];
+            const last = updated[updated.length - 1];
+            updated[updated.length - 1] = { ...last, text: last.text + chunk };
+            return updated;
+          });
+        }
+      }
+    } catch (err) {
+      setEntries((prev) => [
+        ...prev.slice(0, -1),
+        {
+          type: "error",
+          text: "Couldn't reach the local advisor backend. Make sure app.py and llama-server are both running.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    submitQuestion(question);
+  }
+
+  return (
+    <div className="app">
+      <header>
+        <div className="header-top">
+          <svg className="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" rx="16" fill="#2f4a34" />
+            <path
+              d="M50 78 L50 40 M50 40 C30 40 22 24 26 12 C42 16 50 28 50 40 M50 40 C70 40 78 24 74 12 C58 16 50 28 50 40"
+              stroke="#f2eeda"
+              strokeWidth="5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <div>
+            <h1 className="wordmark">Mudimu</h1>
+            <p className="subtitle">Offline farm advisor — livestock &amp; crops</p>
+          </div>
+        </div>
+        <div className={`status ${backendOnline === false ? "offline" : ""}`}>
+          <span className="dot"></span>
+          {backendOnline === null && "Checking advisor..."}
+          {backendOnline === true && "Working offline — advisor ready"}
+          {backendOnline === false && "Advisor not running — start the backend"}
+        </div>
+      </header>
+
+      <main ref={mainRef}>
+        {entries.length === 0 && (
+          <div className="empty-state">
+            Describe a sick animal or a crop problem, in your own words —
+            just like you'd explain it to a vet or extension officer.
+            <div className="examples">
+              {EXAMPLE_QUESTIONS.map((ex, i) => (
+                <button
+                  key={i}
+                  className="example-btn"
+                  onClick={() => submitQuestion(ex)}
+                >
+                  {ex}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {entries.map((entry, i) => {
+          if (entry.type === "question") {
+            return (
+              <div className="entry" key={i}>
+                <div className="entry-label">QUESTION</div>
+                <div className="q-block">{entry.text}</div>
+              </div>
+            );
+          }
+          if (entry.type === "error") {
+            return (
+              <div className="entry" key={i}>
+                <div className="error-block">{entry.text}</div>
+              </div>
+            );
+          }
+          const urgent = isUrgent(entry.text);
+          return (
+            <div className="entry" key={i}>
+              <div className={`a-block ${urgent ? "urgent" : ""}`}>
+                {urgent && <div className="urgent-tag">Needs urgent attention</div>}
+                <div className="answer-text">{entry.text}</div>
+                {entry.sources.length > 0 && (
+                  <div className="sources">
+                    {entry.sources.map((s, j) => (
+                      <span className="source-tag" key={j}>{s}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        {loading && (entries.length === 0 || entries[entries.length - 1].text === "") && (
+          <div className="thinking">
+            <span className="pulse"></span>
+            Thinking...
+          </div>
+        )}
+      </main>
+
+      <footer>
+        <form onSubmit={handleSubmit}>
+          <textarea
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Ask about a sick animal or a crop problem..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
+          />
+          <button type="submit" className="ask-btn" disabled={loading}>
+            {loading ? "..." : "Ask"}
+          </button>
+        </form>
+        <div className="hint">Press Enter to send. No internet needed once the advisor is running.</div>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>
