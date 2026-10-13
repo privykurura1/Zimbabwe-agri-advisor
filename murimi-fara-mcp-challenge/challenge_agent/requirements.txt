@@ -1,0 +1,10 @@
+# Separate from the legacy application's environment.
+mcp==1.29.0
+httpx==0.28.1
+langgraph==1.2.15
+fastapi==0.143.0
+uvicorn==0.54.0
+python-multipart==0.0.32
+scikit-learn>=1.5,<2
+# Official third-party MCP reference server, required for --online.
+mcp-server-fetch==2026.10.10

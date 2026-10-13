@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "murimi-extension": {
+      "command": "python",
+      "args": ["-m", "challenge_agent.server"],
+      "env": {"MURIMI_AGENT_DB": ".challenge-data/agent.sqlite3"}
+    },
+    "third-party-fetch": {
+      "command": "python",
+      "args": ["-m", "mcp_server_fetch"]
+    }
+  }
+}
