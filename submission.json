@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.1.0",
+  "profiler_version": "adtc-profiler 0.1.0",
+  "submission": {
+    "team_id": "offline-ai-farming-advisor-for-zimbabwe",
+    "domain": "agriculture",
+    "language_scope": [
+      "en"
+    ],
+    "african_alpha_claim": false,
+    "budget_laptop_claim": true,
+    "submitter": {
+      "name": "priviledge kurura",
+      "email": "priviledgeprogrammer@gmail.com",
+      "github_handle": "privykurura1"
+    },
+    "cross_disciplinary_pairing": {
+      "discipline": "agriculture",
+      "load_bearing": true,
+      "description": "Combines offline veterinary/agronomic knowledge retrieval (RAG) with region-aware reasoning, giving livestock disease triage and Natural-Region-specific crop advisory for Zimbabwean smallholder farmers with zero connectivity."
+    },
+    "test_prompts": [
+      {
+        "prompt_id": "tp_001",
+        "prompt": "My cow has a high fever and keeps pushing its head against the kraal post, walking in circles. What's wrong and what do I do right now?"
+      },
+      {
+        "prompt_id": "tp_002",
+        "prompt": "There are ragged holes and droppings in the middle of my young maize plants, what's eating them?"
+      }
+    ],
+    "model": {
+      "name": "Qwen2.5-3B-Instruct-Q4_K_M",
+      "runtime": "llama.cpp",
+      "quantization": "GGUF Q4_K_M",
+      "parameters_estimate": "3B",
+      "packaging": "binary_bundle"
+    }
+  },
+  "environment": {
+    "measured_on": "participant_laptop",
+    "cpu_model": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
+    "ram_gb": 15.8,
+    "gpu": "none",
+    "os": "Windows-11-10.0.26100-SP0"
+  },
+  "throughput": {
+    "tokens_per_second_generation": 4.39,
+    "first_token_latency_ms": 89713.85,
+    "prompt_tokens": 512,
+    "generated_tokens": 128
+  },
+  "memory": {
+    "peak_rss_mb": 2051.76,
+    "steady_state_rss_mb": 1949.75,
+    "peak_vms_mb": 482.92
+  },
+  "accuracy": [],
+  "cpu_thermal": {
+    "cpu_percent_p99": 90.9,
+    "core_temp_c_peak": null,
+    "throttled": false
+  },
+  "reproducibility": {
+    "git_commit_sha": "ba41c6c208fd",
+    "docker_image_digest": "unknown",
+    "random_seed": 42
+  },
+  "model_info": {
+    "params_count": 3397103616,
+    "context_length": 32768,
+    "architecture": "qwen2",
+    "claimed_params_estimate": "3B",
+    "params_match": true
+  }
+}

@@ -1,12 +1,12 @@
 #!/bin/bash
-# One-click launcher for Mudimu (Offline Farm Advisor) on Mac/Linux.
+# One-click launcher for Murimi Fara (Offline Farm Advisor) on Mac/Linux.
 #
 # Usage: double-click this file (if your file manager allows running
 # scripts) or run: bash start_advisor.sh
 
 cd "$(dirname "$0")"
 
-echo "Starting Mudimu (Offline Farm Advisor)..."
+echo "Starting Murimi Fara (Offline Farm Advisor)..."
 echo ""
 
 # Activate the virtual environment if it exists
@@ -35,5 +35,5 @@ else
 fi
 
 echo ""
-echo "Mudimu is running. Close this terminal or press Ctrl+C to stop the advisor."
+echo "Murimi Fara is running. Close this terminal or press Ctrl+C to stop the advisor."
 wait $BACKEND_PID

@@ -2,7 +2,7 @@
 
 **Team ID:** offline-ai-farming-advisor-for-zimbabwe
 **Domain:** agriculture
-**Model:** Qwen2.5-3B-Instruct-Q4_K_M
+**Model:** Qwen2.5-1.5B-Instruct-Q4_K_M
 
 ---
 
