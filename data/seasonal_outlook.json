@@ -1,0 +1,28 @@
+{
+  "about": "Copy this season's official rainfall outlook (Meteorological Services Department / SARCOF) here. outlook must be exactly 'below normal', 'normal' or 'above normal'; leave it blank until you have the official statement. Nothing is shown for a region left blank.",
+  "season": "",
+  "source": "",
+  "issued": "",
+  "regions": {
+    "I": {
+      "outlook": "",
+      "note": ""
+    },
+    "II": {
+      "outlook": "",
+      "note": ""
+    },
+    "III": {
+      "outlook": "",
+      "note": ""
+    },
+    "IV": {
+      "outlook": "",
+      "note": ""
+    },
+    "V": {
+      "outlook": "",
+      "note": ""
+    }
+  }
+}

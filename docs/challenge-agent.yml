@@ -1,7 +1,7 @@
 name: Challenge agent and legacy regressions
 on:
   push:
-    branches: ["challenge/**"]
+    branches: [main]
   pull_request:
     branches: [main]
 permissions:

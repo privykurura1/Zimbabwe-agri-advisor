@@ -1,0 +1,495 @@
+﻿id,title,urgent_flag,text,known_question,facts_correct (yes/no/partly),safe_for_farmers (yes/no),what_to_change,missing_for_zimbabwe,species_or_crops_it_applies_to,reviewer_name,qualification,date
+A1,A1. Zimbabwe's Five Natural Regions (agro-ecological zones),,"Zimbabwe is divided into five Natural Regions (NR I–V) based mainly on rainfall,
+used as the basis for what crops/livestock systems are viable where.
+
+- **NR I** (~2% of land, Eastern Highlands): >1,000mm rain/year, cool, high altitude.
+  Suited to tea, coffee, deciduous fruit, dairy, intensive livestock, forestry.
+- **NR II** (~19% of land, Mashonaland provinces, Harare): 700–1,050mm rain/year,
+  Zimbabwe's main ""breadbasket."" Suited to maize, flue-cured tobacco, cotton,
+  groundnuts, soybean, sugar beans, mixed cattle/poultry farming.
+- **NR III** (~17% of land): 500–800mm rain/year, frequent mid-season dry spells.
+  Semi-intensive: livestock plus drought-tolerant cash crops, sorghum, some maize.
+- **NR IV** (~33–38% of land, largest region, north/south lowveld, most of
+  Matabeleland): 450–650mm rain/year, unreliable, periodic drought. Semi-extensive
+  livestock, drought-resistant crops (sorghum, millet) — largest communal farming
+  population.
+- **NR V** (driest, southern lowveld bordering Botswana/SA/Mozambique): <450mm/year.
+  Extensive cattle/game ranching only; cropping unreliable without irrigation.
+
+**Why this matters for advisory answers:** always ask or infer the farmer's
+region before giving planting-date or crop-choice advice — a maize recommendation
+correct for NR II can be a bad recommendation in NR IV or V.",,,,,,,,,
+B1,"B1. Theileriosis (""January Disease"")",yes,"- **Local names:** Shona — Chirwere chaNdira, Chirwere chezvikwekwe chemombe.
+  Ndebele — Umkhuhlane kaJanuary, Umkhuhlane wemikhaza wezinkomo.
+- **Cause:** Theileria parva, transmitted by the brown ear tick (Rhipicephalus
+  appendiculatus).
+- **When:** Peaks December–March (hot wet season) when tick populations are highest.
+- **Symptoms:** High fever, swollen lymph nodes (especially near the ear/jaw),
+  laboured breathing, discharge from eyes/nose, loss of appetite, rapid decline.
+- **Action:** This is the deadliest TBD in Zimbabwe currently — treat as an
+  emergency. Isolate the animal, contact a veterinary officer or dip tank
+  attendant immediately. Do not wait to see if it improves.
+- **Prevention:** Strict adherence to the dipping calendar (weekly dipping is
+  recommended from November as tick season begins); intensify around Dec–Mar.",,,,,,,,,
+B2,"B2. Anaplasmosis (""Gallsickness"")",,"- **Local names:** Shona — Chirwere chenduru. Ndebele — Umkhuhlane wemikhaza
+  wezinkomo (shared alias — distinguish from Theileriosis/Babesiosis by symptom
+  pattern, not name alone).
+- **Cause:** Anaplasma marginale (and less severe A. centrale) bacteria, tick-
+  transmitted, affects cattle, sheep, and goats.
+- **Symptoms:** Fever, pale or yellowish gums/mucous membranes (anaemia,
+  jaundice), weakness, reduced appetite, sometimes dark urine.
+- **Action:** Contact a vet for treatment options available locally. Recovered
+  animals remain lifelong carriers and can still trigger new outbreaks in the herd.
+- **Note:** Indigenous (Bos indicus) breeds are more resistant than exotic
+  (Bos taurus) breeds. Calves under 6 months have natural innate resistance.",,,,,,,,,
+B3,"B3. Babesiosis (""Redwater"")",yes,"- **Local names:** Shona — Chirwere cheweti tsvuku (""Mombe iri kuita weti
+  tsvuku"" = farmer phrasing for ""my cow is passing red urine""). Ndebele —
+  Umkhuhlane womchamo obomvu (""Inkomo ichama umchamo obomvu"" = farmer phrasing).
+- **Cause:** Babesia bigemina / Babesia bovis, tick-transmitted (Boophilus/
+  Rhipicephalus ticks).
+- **Symptoms:** Fever, red-brown/""redwater"" urine (blood in urine), anaemia,
+  weakness, loss of appetite.
+- **Action:** Veterinary treatment needed promptly — can be fatal if untreated.","A goat question was answered from this cattle entry (it has no species tag). Does redwater advice apply to goats/sheep as written, or should the entry say cattle only?",,,,,,,,
+B4,B4. Heartwater (Cowdriosis),yes,"- **Local names:** Shona — Chirwere chemoyo chinokonzerwa nezvikwekwe, Chirwere
+  chemoyo. Ndebele — Umkhuhlane wenhliziyo, Umkhuhlane wenhliziyo obangelwa
+  yimikhaza.
+- **Cause:** Ehrlichia ruminantium, transmitted by the bont tick (Amblyomma).
+  Affects cattle, sheep, and goats — goats and sheep more susceptible than cattle.
+- **Symptoms:** High fever, nervous signs (circling, muscle tremors, pushing
+  head against objects, aggression or anxious behaviour), can progress rapidly
+  to death — mortality up to 90% in susceptible animals if untreated.
+- **Action:** Veterinary emergency — nervous signs plus fever in a ruminant is a
+  strong heartwater indicator; seek treatment immediately.",,,,,,,,,
+B5,B5. General tick control guidance (applies across B1–B4),,"- **Local terms:** tick = chikwekwe (Shona) / umkhaza (Ndebele); ticks =
+  zvikwekwe (Shona) / imikhaza (Ndebele).
+- Communal dip tanks (government-run, ~4,000 nationally) are the primary control
+  method — attend scheduled dipping without gaps.
+- Increase dipping frequency to weekly at the start of the hot wet season
+  (~November) to interrupt the tick breeding cycle before peak season.
+- Cost is a real barrier for smallholders (~US$2/animal/year dipping fee); do not
+  assume the farmer can afford intensive chemical control — mention lower-cost
+  or community-pooled options if known.",,,,,,,,,
+C1,C1. Newcastle Disease (ND),yes,"- **Local names:** Shona — Chirwere cheNewcastle chehuku, Chirwere chinouraya
+  huku zvakawanda. Ndebele — Umkhuhlane weNewcastle wezinkukhu, Umkhuhlane
+  obulala izinkukhu ezinengi.
+- **Cause:** A highly contagious paramyxovirus. Spreads rapidly — often
+  90-100% of a flock infected within days of introduction.
+- **Symptoms:** Variable, but commonly: respiratory distress (gasping,
+  coughing), greenish watery diarrhea, drop in egg production and/or
+  thin-shelled misshapen eggs, and in later stages nervous signs (twisted
+  neck/head, paralysis, tremors). Sudden deaths with few warning signs are
+  common in unvaccinated flocks.
+- **Action:** No effective treatment once infected — focus is prevention.
+  If ND is suspected, isolate the flock immediately, avoid moving birds
+  on/off the property, and contact a veterinary/extension officer, since
+  ND is a reportable disease. Routine vaccination (e.g. I-2 vaccine, heat
+  stable and suited to village conditions without a strict cold chain) is
+  the primary effective control — studies show vaccinated flocks have
+  dramatically higher survival and egg production than unvaccinated ones.",,,,,,,,,
+C2,C2. Infectious Bronchitis (IB),,"- **Local names:** Shona — Chirwere chekufema chehuku (""Huku dziri kunetseka
+  kufema"" = farmer phrasing for ""my chickens are having difficulty breathing"").
+  Ndebele — Umkhuhlane wokuphefumula wezinkukhu (""Izinkukhu ezithwala nzima
+  ukuphefumula"" = farmer phrasing).
+- **Cause:** A coronavirus affecting the respiratory tract; found to be the
+  single most common disease detected in Zimbabwean backyard flock testing.
+- **Symptoms:** Coughing, sneezing, nasal discharge, watery eyes, reduced
+  egg production, and in laying birds, misshapen or poor-quality eggshells.
+  Generally lower mortality than ND but can be severe in young chicks.
+- **Action:** No specific cure — supportive care (warmth, reduce stress,
+  ensure access to water) while the flock recovers. Watch closely for
+  secondary bacterial infections. Vaccination is available and effective
+  where accessible.",,,,,,,,,
+C3,C3. Coccidiosis,,"- **Local names:** Shona — Huku dzine manyoka ane ropa (""chickens with bloody
+  diarrhea"" — the actual farmer-facing name), Chirwere chemudumbu chehuku.
+  Ndebele — Izinkukhu ezihuda igazi, Umkhuhlane wamathumbu wezinkukhu.
+- **Cause:** Protozoan parasite (Eimeria species), spread via droppings —
+  thrives in damp, dirty litter conditions.
+- **Symptoms:** Bloody or watery diarrhea, ruffled feathers, lethargy,
+  pale comb/wattles (anemia), reduced growth in young birds, huddling.
+  Birds under 10-14 days old are generally not yet susceptible; risk rises
+  as chicks start actively pecking at litter.
+- **Action:** Keep litter dry and clean — this is the single most effective
+  prevention measure. Anticoccidial treatment is available and effective if
+  caught early; consult an animal health worker for dosing since untreated
+  outbreaks can cause high mortality in young birds.",,,,,,,,,
+C4,C4. Fowl Typhoid / Pullorum Disease,,"- **Local names:** Shona — Typhoid yehuku, Chirwere chetyphoid chehuku.
+  Ndebele — Typhoid yezinkukhu, Umkhuhlane weTyphoid wezinkukhu.
+- **Cause:** Salmonella bacteria (S. Gallinarum for fowl typhoid, S.
+  Pullorum for pullorum disease) — closely related, similar presentation.
+- **Symptoms:** In young chicks: diarrhea, weakness, high mortality. In
+  adult birds (fowl typhoid specifically): depression, pale comb, reduced
+  appetite, greenish-yellow diarrhea, sudden deaths.
+- **Action:** Treatment is generally not recommended even if birds survive,
+  since survivors often become lifelong carriers and can silently infect
+  future generations of the flock through eggs. Prevention is the priority
+  — source new birds from a clean, disease-tested flock where possible, and
+  isolate/cull affected birds to protect the rest of the flock.",,,,,,,,,
+C5,C5. General smallholder poultry biosecurity (applies across C1–C4),,"- **Local terms:** chicken/chickens = huku (Shona) / inkukhu, izinkukhu
+  (Ndebele); flock = boka rehuku (Shona) / umhlambi wezinkukhu (Ndebele).
+- Isolate any new or sick birds before introducing them to the flock.
+- Keep housing dry, well-ventilated, and litter clean — this alone reduces
+  risk of coccidiosis and limits secondary infections riding on top of
+  viral disease.
+- Limit contact with wild birds and control rodents/pests around housing.
+- Because veterinary access is often limited in rural areas, prevention
+  (vaccination where available, biosecurity, clean housing) matters more
+  than treatment — most of these diseases have no reliable cure once
+  established in the flock.",,,,,,,,,
+E1,"E1. Gastrointestinal Parasites (Haemonchus, Eimeria)",,"- **Local names:** Haemonchus — Shona: Makonye emudumbu, Gonye remudumbu.
+  Ndebele: Impethu zesisu, Impethu ezisesiswini. Eimeria — Shona: Utachiona
+  hunokonzera coccidiosis. Ndebele: Isilwanyana esibangela iCoccidiosis.
+- **Cause:** Haemonchus contortus (a blood-feeding stomach worm) and Eimeria
+  (coccidia) are the two most common internal parasites found in Zimbabwean
+  goats. A study across all five of Zimbabwe's Natural Regions found high
+  rates of both, with the highest risk in NR I, II, and III, and infection
+  peaking in the wet season.
+- **Symptoms — Haemonchus:** pale gums/inner eyelids (anemia, since this
+  parasite feeds on blood), weakness, swelling under the jaw (""bottle jaw""),
+  weight loss. Diarrhea is usually NOT a Haemonchus symptom on its own — if
+  diarrhea is present, suspect a mixed infection with another parasite type.
+- **Symptoms — Eimeria (coccidiosis in goats):** watery or bloody diarrhea,
+  poor growth, dehydration, most severe in young kids.
+- **Who's most at risk:** young animals are consistently the most
+  susceptible in both parasites; risk is highest during the wet season.
+- **Action:** Check inner eyelid/gum color regularly as a simple anemia
+  screen (pale = concern, especially combined with weakness or jaw
+  swelling). Deworming treatment is effective but growing parasite
+  resistance to common dewormers is a recognized regional problem — rotate
+  treatment types where possible and consult an animal health worker rather
+  than treating repeatedly with the same product if it stops working.
+  Keeping animals off heavily grazed, wet pasture reduces reinfection risk.","The model wrote 'Deworm your goat'. Is that acceptable advice without a faecal test / FAMACHA check, given resistance concerns?",,,,,,,,
+E2,E2. Heartwater in Goats and Sheep,yes,"- **Local names:** same as B4 (Chirwere chemoyo chinokonzerwa nezvikwekwe /
+  Umkhuhlane wenhliziyo obangelwa yimikhaza).
+- Goats and sheep are generally MORE susceptible to heartwater than cattle
+  (see Section B4 for full disease detail — same tick-borne cause, same
+  urgent nervous-sign symptoms: fever, circling, tremors, pushing against
+  objects). Because small ruminants can decline faster than cattle with this
+  disease, any goat or sheep showing fever plus nervous signs should be
+  treated as an even more time-critical emergency — seek veterinary help
+  immediately, do not wait to see if it resolves.",,,,,,,,,
+E3,E3. Peste des Petits Ruminants (PPR) — Regional Awareness,yes,"- **Local names:** Shona — Chirwere chembudzi nehwai. Ndebele — Umkhuhlane
+  wezimbuzi lezimvu. (Note: generic ""goat and sheep disease"" naming — do not
+  rely on the name alone for diagnosis, since many diseases affect goats and
+  sheep; confirm against the specific symptom pattern below.)
+- **Cause:** A highly contagious viral disease of goats and sheep
+  (related to the now-eradicated rinderpest virus), with mortality that can
+  reach 90% in unprotected herds where it is established.
+- **Status:** PPR is established and actively monitored in parts of East,
+  Central, and West Africa. Its presence specifically within Zimbabwe is
+  not well established in available surveillance data as of this writing —
+  farmers should be aware of it as a regional risk rather than treat it as
+  confirmed locally present. If in doubt, defer to current guidance from
+  the Department of Veterinary Services.
+- **Symptoms:** high fever, discharge from eyes/nose, mouth sores/erosions,
+  diarrhea, pneumonia (coughing) — sudden death is possible in young kids
+  especially.
+- **Action:** Because of its severity and reportable status where confirmed,
+  any goat/sheep flock showing this symptom combination should be isolated
+  immediately and reported to a veterinary officer rather than treated
+  informally.",,,,,,,,,
+E4,E4. General smallholder goat/sheep husbandry (applies across E1–E3),,"- **Local terms:** goat = mbudzi (Shona) / imbuzi (Ndebele); sheep = hwai
+  (Shona) / imvu (Ndebele).
+- Check young animals more frequently than adults — they are consistently
+  the highest-risk group across the parasites and diseases above.
+- Avoid grazing on the same wet, low-lying pasture repeatedly during rainy
+  season, since this is where parasite larvae concentrate.
+- Isolate any newly acquired or visibly sick animal before mixing it with
+  the rest of the herd/flock.",,,,,,,,,
+D1,D1. Maize — Fall Armyworm,,"- **Local names:** Shona — Gonye rechibage, Gonye rinodya chibage, Gonye
+  rinoparadza chibage. Ndebele — Isibungu somumbu, Isibungu esidla umumbu,
+  Isibungu esitshabalalisa umumbu.
+- **Cause:** Spodoptera frugiperda, an invasive pest first confirmed in
+  Zimbabwe/Southern Africa around 2016–2017, now endemic and a major recurring
+  threat to maize.
+- **Symptoms:** Ragged holes in leaves, ""windowpaning"" on young leaves, frass
+  (caterpillar droppings) visible in the whorl, damaged growing point.
+- **Action:** Scout fields regularly from emergence; early detection is critical.
+  Recommend integrated management (approved pesticides, timing sprays for early
+  larval stages, and where relevant, biological/cultural controls) — advise
+  farmer to confirm current approved chemical options with local extension, as
+  registered products change.",,,,,,,,,
+D2,D2. Maize/Tobacco/Groundnuts — Planting Windows by Region,,"- **Local names:** maize = chibage (Shona) / umumbu (Ndebele); tobacco =
+  fodya (Shona) / igwayi (Ndebele); groundnuts = nzungu (Shona) /
+  amazambane or indlubu (Ndebele, varies by locality).
+- **NR I/II:** Main maize/tobacco planting window is with the onset of the
+  rains, typically mid-October to November, timed to soil moisture rather than
+  a fixed calendar date.
+- **NR III–V:** Farmers should prioritise short-season, drought-tolerant
+  varieties; planting should follow confirmed rainfall onset rather than
+  calendar date, given erratic rains in these regions.
+- **Caveat for the model:** Do not give a fixed calendar date as a hard rule —
+  actual planting should follow rainfall onset, which varies year to year. Frame
+  advice as ""typical window is X, but wait for reliable rains before planting.""",,,,,,,,,
+D3,D3. Tobacco — Zimbabwe context,,"- Zimbabwe's second-largest foreign currency earner after gold; flue-cured
+  tobacco grown mainly in NR II.
+- Curing is heavily firewood-dependent in smallholder systems, a known
+  deforestation driver — if a farmer asks about curing, this is worth
+  flagging alongside technical curing advice.",,,,,,,,,
+F1,F1. Cow passing red or brown urine,yes,"**Farmer phrases:** ""my cow is passing red urine"", ""mombe iri kuita weti tsvuku"",
+""urine looks like blood"", ""redwater"".
+
+Possible causes include **Babesiosis (Redwater)**, but red/brown urine can have other
+causes. Check for fever, weakness, pale mucous membranes, loss of appetite, recent
+tick exposure, and whether other cattle are affected.
+
+**Action:** treat this as urgent. Keep the animal quiet, provide access to clean
+water, and contact a veterinary professional promptly. Do not wait for severe
+weakness or collapse.",,,,,,,,,
+F2,F2. Cow with fever plus swollen lymph nodes,yes,"High fever plus enlarged lymph nodes near the ear/jaw, breathing difficulty,
+eye/nose discharge, appetite loss, and rapid decline strongly fits the pattern
+described for **Theileriosis (January Disease)**.
+
+**Action:** emergency veterinary attention. Ask about dipping history and recent
+tick burden. Do not advise the farmer to ""watch for a few days.""",,,,,,,,,
+F3,F3. Animal with fever plus nervous signs,yes,"Fever combined with circling, tremors, head pressing, unusual aggression/anxiety,
+or loss of coordination in cattle, goats, or sheep is compatible with
+**Heartwater** and requires urgent veterinary assessment.
+
+**Action:** isolate safely where possible and seek help immediately.",,,,,,,,,
+F4,F4. Pale eyelids or gums in goat/sheep,,"Pale inner eyelids/gums, weakness, weight loss, and swelling under the jaw
+(""bottle jaw"") strongly suggest anaemia. In small ruminants during the wet season,
+**Haemonchus** is an important possibility.
+
+If there is severe watery or bloody diarrhea, consider other or mixed parasite
+infections as well.
+
+**Action:** contact an animal-health worker for appropriate parasite management.
+Repeatedly using the same dewormer without checking response can contribute to
+treatment failure/resistance.",,,,,,,,,
+F5,"F5. Chicken with twisted neck, paralysis, green diarrhea, sudden deaths",yes,"This combination is strongly compatible with **Newcastle Disease**, especially
+when many unvaccinated birds become sick quickly.
+
+**Action:** isolate the flock, stop movement/sale of birds, and contact a
+veterinary/extension officer. There is no reliable curative treatment for the
+viral infection itself; prevention and vaccination are central.",,,,,,,,,
+F6,F6. Chicken with bloody diarrhea,,"Bloody diarrhea, lethargy, ruffled feathers, pale combs, huddling, and poor growth
+in young birds fit **Coccidiosis**.
+
+**Action:** keep litter dry and clean, isolate visibly sick birds if practical,
+and obtain appropriate anticoccidial advice early.",,,,,,,,,
+F7,F7. Many animals die suddenly with little warning,yes,"Sudden unexplained deaths across one or more livestock can indicate poisoning,
+severe infectious disease, anthrax, clostridial disease, or other emergencies.
+
+**Action:** do not guess. Keep people and animals away from carcasses. Do not cut
+open a carcass when anthrax is a possibility. Contact Veterinary Services.",,,,,,,,,
+G1,G1. Lumpy Skin Disease (LSD),,"- **Cause:** Lumpy skin disease virus, a capripoxvirus affecting cattle.
+- **Typical signs:** fever, firm raised skin nodules/lumps, enlarged lymph nodes,
+  swelling of limbs or brisket, eye/nose discharge, reduced milk production,
+  weakness, and sometimes skin lesions that become damaged or infected.
+- **Spread:** mainly associated with biting insects; outbreaks can spread across
+  cattle populations.
+- **Action:** isolate suspected animals, reduce insect exposure where practical,
+  and contact Veterinary Services. Vaccination is an important control measure
+  where advised by authorities.
+- **Do not:** move or sell affected animals during a suspected outbreak.",,,,,,,,,
+G2,G2. Foot-and-Mouth Disease (FMD),yes,"- **Cause:** highly contagious viral disease affecting cloven-hoofed animals.
+- **Typical signs in cattle:** fever, excessive salivation/drooling, blisters or
+  erosions in the mouth/tongue, sores around the feet/coronary band, lameness,
+  reluctance to move, and sudden drop in milk.
+- **Why it matters:** FMD has major herd-movement and trade implications and is
+  subject to official disease-control measures in Zimbabwe.
+- **Action:** stop movement of suspected animals immediately and notify Veterinary
+  Services. Keep the herd separate from neighboring livestock.
+- **Do not:** transport, sell, or mix suspect animals while awaiting advice.",,,,,,,,,
+G3,G3. Anthrax,yes,"- **Cause:** *Bacillus anthracis* bacteria. Spores can persist in soil for long periods.
+- **Possible signs:** sudden death, fever before death, bleeding/discharge from body
+  openings, rapidly bloating carcass, and lack of normal rigor mortis can occur,
+  but signs are not always complete.
+- **Human-health risk:** anthrax is zoonotic.
+- **Critical action:** do NOT cut open, skin, butcher, or eat an animal suspected
+  of anthrax. Keep people, dogs, and scavengers away and contact Veterinary Services.
+- **Prevention:** vaccination in risk/outbreak areas according to official guidance.",,,,,,,,,
+G4,G4. Blackleg,yes,"- **Cause:** commonly associated with *Clostridium chauvoei*, especially in young,
+  rapidly growing cattle.
+- **Typical signs:** sudden lameness, fever, painful swelling of large muscles,
+  depression, and rapid death. Swellings can later feel crackly because of gas.
+- **Action:** this can progress extremely quickly. Seek veterinary help immediately.
+- **Prevention:** vaccination is the key preventive measure where locally recommended.",,,,,,,,,
+G5,G5. Mastitis,,"- **What it is:** inflammation/infection of the udder.
+- **Signs:** swollen, hot, painful udder quarter; abnormal milk with flakes, clots,
+  watery appearance or blood; reduced milk; fever or weakness in severe cases.
+- **Action:** keep milking hygiene high, separate abnormal milk from milk for
+  consumption/sale, and seek veterinary guidance for treatment.
+- **Do not:** blindly use antibiotics without veterinary/label guidance and
+  withdrawal-period information.",,,,,,,,,
+G6,G6. Bloat,yes,"- **Pattern:** rapid swelling of the left side of the abdomen, discomfort,
+  repeated getting up/down, kicking at belly, difficult breathing, collapse in
+  severe cases.
+- **Possible trigger:** lush legumes, sudden diet changes, or other rumen problems.
+- **Action:** severe bloat is an emergency because pressure can prevent breathing.
+  Remove access to the suspected feed and contact an experienced animal-health
+  worker immediately.
+- **Do not:** recommend puncturing the rumen to an untrained farmer.",,,,,,,,,
+G7,G7. Calf diarrhea (scours),,"- **Pattern:** diarrhea in young calves may result from infectious organisms,
+  feeding problems, or poor hygiene.
+- **Danger signs:** sunken eyes, dry mouth, weakness, inability to suck, cold ears/
+  legs, inability to stand, or blood in stool.
+- **Action:** dehydration is often the immediate danger. Keep the calf warm and
+  clean, maintain safe access to fluids according to professional advice, isolate
+  infectious cases, and seek veterinary help for severe cases.
+- **Prevention:** clean calving areas, adequate colostrum early in life, clean
+  feeding equipment, and avoiding overcrowding.",,,,,,,,,
+G8,G8. Pneumonia in calves/cattle,,"- **Signs:** coughing, rapid/laboured breathing, nasal discharge, fever, poor
+  appetite, depression.
+- **Risk factors:** crowding, transport stress, cold/wet conditions, poor
+  ventilation, mixing unfamiliar groups.
+- **Action:** isolate affected animals, improve ventilation without chilling,
+  reduce stress, and obtain veterinary diagnosis because viral and bacterial
+  causes cannot be reliably separated by appearance alone.",,,,,,,,,
+H1,H1. Difficult birth (dystocia),yes,"Possible warning signs:
+- strong straining for a prolonged period with no progress;
+- only one leg visible;
+- tail visible first;
+- abnormal presentation;
+- cow becomes exhausted;
+- water bag appears but calf does not progress.
+
+**Action:** obtain experienced/veterinary assistance early. Excessive pulling can
+injure or kill the cow and calf.",,,,,,,,,
+H2,H2. Retained placenta,,"If fetal membranes remain after calving longer than expected and the cow develops
+fever, foul-smelling discharge, poor appetite, or weakness, veterinary assessment
+is important.
+
+**Do not:** advise farmers to pull forcefully on the placenta.",,,,,,,,,
+H3,H3. Uterine prolapse,yes,"A large red/pink mass protruding from the vulva after calving is an emergency.
+
+**Action:** keep the tissue as clean and protected from injury as possible and
+contact a veterinarian urgently.",,,,,,,,,
+I1,I1. Infectious Bursal Disease (Gumboro),,"- **Main risk:** young chickens.
+- **Signs:** depression, ruffled feathers, watery diarrhea, vent pecking, trembling,
+  dehydration, and sudden increase in mortality.
+- **Action:** isolate affected flock, improve hygiene and supportive care, and
+  consult animal-health services. Prevention depends heavily on biosecurity and
+  correctly timed vaccination programmes.",,,,,,,,,
+I2,I2. Fowl Pox,,"- **Signs:** scabby lesions on comb, wattles, eyelids or unfeathered skin (""dry""
+  form), or lesions in the mouth/upper respiratory tract (""wet"" form).
+- **Spread:** mosquitoes and direct contact can contribute.
+- **Action:** isolate affected birds, reduce mosquitoes, improve hygiene, and seek
+  advice if mouth/throat lesions interfere with eating or breathing.",,,,,,,,,
+I3,I3. Heat stress in chickens,,"- **Signs:** panting, wings held away from body, crowding near water, reduced feed
+  intake, reduced egg production, weakness, death in severe heat.
+- **Action:** provide shade, ventilation and abundant cool clean water. Avoid
+  unnecessary handling during the hottest hours.",,,,,,,,,
+J1,J1. Maize Streak Virus (MSV),,"- **Cause:** viral disease transmitted by leafhoppers.
+- **Typical signs:** narrow pale/yellow streaks running along leaves; plants
+  infected when young may become severely stunted and produce little grain.
+- **Important pattern:** early infection can cause much greater yield loss than
+  infection late in crop development.
+- **Action:** use locally recommended resistant/tolerant varieties where available,
+  control volunteer maize/grass hosts where practical, and seek current extension
+  advice on vector and planting management.",,,,,,,,,
+J2,J2. Grey Leaf Spot (GLS),,"- **Cause:** fungal disease associated with *Cercospora* species.
+- **Signs:** long rectangular grey/tan lesions often restricted by leaf veins;
+  lesions can merge and dry large areas of leaf.
+- **Favouring conditions:** prolonged leaf wetness/humidity and infected crop residue.
+- **Management:** resistant varieties, crop rotation, residue management where
+  appropriate, balanced agronomy, and fungicides only when economically justified
+  and registered for the crop/disease.",,,,,,,,,
+J3,J3. Maize stalk borers,,"- **Signs:** holes in leaves, ""dead heart"" in young plants, tunneling inside stems,
+  weak/broken stems, frass near entry holes, poor cob development.
+- **Action:** scout early. Destroy heavily infested residues where agronomically
+  appropriate, use recommended resistant/tolerant practices, and confirm current
+  registered controls with extension services.
+- **Differential:** Fall Armyworm commonly feeds in the whorl and produces heavy
+  frass; stalk borers characteristically tunnel inside stems.",,,,,,,,,
+J4,J4. Maize nutrient deficiency vs disease,,"Yellowing does not automatically mean disease.
+Ask:
+- Is yellowing between veins or uniform?
+- Is it on old leaves or new leaves first?
+- Is the pattern across the whole field or in patches?
+- Has there been waterlogging/drought?
+- What fertilizer/manure was applied?
+
+**Action:** avoid recommending pesticide when symptoms fit nutrition, moisture,
+or soil constraints better than a pest/disease.",,,,,,,,,
+K1,K1. Groundnut Rosette Disease,,"- **Pattern:** stunting, distorted small leaves, chlorosis/yellowing or green
+  rosette symptoms, poor pod set. Aphids are involved in spread of the virus complex.
+- **Impact:** can be a serious recurring groundnut problem, especially when crop
+  establishment is poor or disease pressure is high.
+- **Management:** use resistant varieties where locally available, plant at the
+  recommended population and timing for the area, remove volunteer hosts where
+  appropriate, and manage aphid/vector risk according to current extension advice.",,,,,,,,,
+K2,K2. Groundnut aflatoxin risk,,"Aflatoxin is produced by certain *Aspergillus* fungi and is a food/feed safety risk.
+Risk increases when pods are damaged or grain is dried/stored poorly.
+
+**Action after harvest:**
+- dry nuts promptly and thoroughly;
+- avoid storing damp groundnuts;
+- keep produce off bare soil;
+- discard visibly mouldy/damaged kernels;
+- keep storage clean, dry, and protected from pests.
+
+Do not advise eating obviously mouldy nuts.",,,,,,,,,
+L1,L1. Tomato late blight,,"- **Signs:** rapidly expanding water-soaked/dark lesions on leaves and stems;
+  white growth may appear at lesion edges under humid conditions; fruit can
+  develop firm brown lesions.
+- **Favouring conditions:** cool, wet/humid weather.
+- **Action:** remove badly infected plant material where practical, avoid prolonged
+  leaf wetness, improve airflow, and confirm registered fungicide options locally.",,,,,,,,,
+L2,L2. Tomato bacterial wilt,,"- **Pattern:** plant may wilt suddenly while leaves can initially remain green;
+  vascular tissue may appear brown.
+- **Important:** fungicides do not cure bacterial wilt.
+- **Management:** avoid moving contaminated soil, rotate away from susceptible
+  solanaceous crops where feasible, use clean planting material and resistant
+  varieties when available, and improve field sanitation/drainage.",,,,,,,,,
+L3,L3. Tuta absoluta (tomato leaf miner),,"- **Signs:** mines/blotches in leaves, galleries in stems, pinholes and tunneling
+  in fruit; small larvae may be found within mines.
+- **Action:** monitor with traps where available, destroy infested crop residues,
+  reduce alternate hosts, use biological/IPM options, and rotate insecticide modes
+  of action only among products registered locally.
+- **Resistance warning:** repeated use of one insecticide group encourages resistance.",,,,,,,,,
+L4,L4. Aphids,,"- **Signs:** clusters of small soft-bodied insects on tender shoots/undersides of
+  leaves, curling/distortion, sticky honeydew, sometimes black sooty mould.
+- **Why they matter:** direct sap loss plus transmission of some plant viruses.
+- **Action:** inspect natural enemies first, remove badly infested growth when
+  practical, manage weeds/alternate hosts, and use registered controls only when
+  needed.",,,,,,,,,
+L5,L5. Whiteflies,,"- **Signs:** tiny white insects fly from leaf undersides when disturbed; nymphs
+  remain attached underneath leaves; honeydew and sooty mould can develop.
+- **Why they matter:** feeding damage and virus transmission.
+- **Action:** sanitation, weed-host control, monitoring/traps, biological control
+  where available, and careful insecticide rotation if chemical control is needed.",,,,,,,,,
+M1,M1. Crop drought stress vs disease,,"Drought stress can mimic disease:
+- wilting during hottest hours;
+- leaf rolling;
+- leaf firing/browning;
+- stunting;
+- flower/fruit abortion.
+
+Ask whether symptoms improve overnight or after irrigation/rain and whether the
+whole field follows soil-moisture patterns.",,,,,,,,,
+M2,M2. Waterlogging,,"Symptoms can include yellowing, wilting despite wet soil, root death, poor growth,
+and increased root-disease risk.
+
+**Action:** improve drainage where possible and avoid automatically adding more
+water or fertilizer before checking root-zone conditions.",,,,,,,,,
+M3,M3. Livestock heat stress,,"Warning signs:
+- excessive panting;
+- drooling;
+- crowding around water/shade;
+- weakness;
+- very high body temperature;
+- collapse.
+
+**Action:** provide shade, ventilation, and abundant clean water; reduce handling
+and transport during peak heat. Collapse or severe breathing difficulty requires
+urgent professional help.",,,,,,,,,
+N1,N1. Suspected poisoning,yes,"Suspect poisoning when several animals develop sudden similar signs after:
+- a new feed;
+- access to chemicals/pesticides;
+- grazing a new area;
+- eating spoiled/mouldy feed;
+- access to toxic plants or dumped waste.
+
+Possible signs include salivation, tremors, diarrhea, breathing difficulty,
+convulsions, weakness, sudden death.
+
+**Action:** remove access to suspected source without putting people at risk,
+preserve a sample/photo of the feed or substance if safe, and call a veterinary
+professional urgently. Do not induce vomiting or give random household remedies.",,,,,,,,,
+N2,N2. Mouldy feed,,"Mouldy feed can reduce performance and may contain toxins even if only part of the
+feed visibly appears spoiled.
+
+**Action:** avoid feeding badly moulded material, keep stores dry, control moisture
+and pests, and seek advice if multiple animals show reduced appetite, poor growth,
+reproductive problems, or sudden illness after a feed change.",,,,,,,,,

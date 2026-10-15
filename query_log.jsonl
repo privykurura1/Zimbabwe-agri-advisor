@@ -1,7 +1,0 @@
-{"time": "2026-09-28T08:15:54+00:00", "kind": "needs_more_detail", "query": "my maize has yellow leaves, what is the problem", "domain": "crops"}
-{"time": "2026-09-28T08:17:58+00:00", "kind": "answered", "query": "My goat's under-jaw is swollen and its eyelids look pale, is it worms?", "domain": "animal", "entries": ["E1"], "urgent": false}
-{"time": "2026-10-11T17:40:51+00:00", "kind": "answered", "query": "My cattle are drooling and have blisters in the mouth and are lame", "domain": "animal", "entries": ["G2"], "urgent": true}
-{"time": "2026-10-11T18:02:45+00:00", "kind": "answered", "query": "Inkomo yami ichama umchamo obomvu", "domain": "animal", "entries": ["B3"], "urgent": true}
-{"time": "2026-10-11T18:18:55+00:00", "kind": "answered", "query": "My cattle are drooling and have blisters in the mouth and are lame", "domain": "animal", "entries": ["G2"], "urgent": true}
-{"time": "2026-10-11T18:36:52+00:00", "kind": "answered", "query": "Mombe yangu iri kuita weti tsvuku", "domain": "animal", "entries": ["B3", "F1"], "urgent": true}
-{"time": "2026-10-11T18:39:37+00:00", "kind": "answered", "query": "My cow has a high fever and keeps pushing its head against the kraal post, walking in circles", "domain": "animal", "entries": ["B4", "F3"], "urgent": true}

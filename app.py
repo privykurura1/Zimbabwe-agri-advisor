@@ -25,6 +25,7 @@ import datetime
 import json
 import os
 import socket
+import sys
 import threading
 import urllib.request
 import cv2
@@ -152,8 +153,27 @@ def log_query(kind: str, query: str = "", **extra):
         pass
 
 
+def _province_of(payload):
+    try:
+        from murimi_plus.outbreak import PROVINCES
+    except Exception:
+        return {}
+    return {"province": payload.province} if payload.province in PROVINCES else {}
+
+
+def _region_of(query):
+    try:
+        from murimi_plus.content import region_in
+        return region_in(query)
+    except Exception:
+        return ""
+
+
 class Question(BaseModel):
     question: str
+    # Optional, chosen by the farmer in the app; used only for the outbreak
+    # counts and to show nearby contacts. Never required.
+    province: str = ""
 
 
 # Real bug this fixes, found during Shona generation testing: with no stop
@@ -318,9 +338,16 @@ def ask_stream(payload: Question):
         # answer (the old text-scanning flag could tag "not urgent" as urgent).
         "urgent": result["urgent"],
         "grounded": result["grounded"],
+        # For the extras box under the answer (murimi_plus): which entries
+        # matched, and the language of the question.
+        "entry_ids": sorted(result["matched"]) if result["grounded"] else [],
+        "domain": result.get("answer_domain") or result["domain"],
+        "language": detect_language(query),
+        "region": _region_of(query),
     }
     if result["grounded"]:
-        log_query("answered", query, domain=result["domain"], entries=sorted(result["matched"]), urgent=result["urgent"])
+        log_query("answered", query, domain=result["domain"], entries=sorted(result["matched"]), urgent=result["urgent"],
+                  **_province_of(payload))
     else:
         log_query("needs_more_detail", query, domain=result["domain"])
 
@@ -358,7 +385,8 @@ def ask(payload: Question):
     retrieved_titles = [c.splitlines()[0].replace("### ", "") for c in result["chunks"]]
 
     if result["grounded"]:
-        log_query("answered", query, domain=result["domain"], entries=sorted(result["matched"]), urgent=result["urgent"])
+        log_query("answered", query, domain=result["domain"], entries=sorted(result["matched"]), urgent=result["urgent"],
+                  **_province_of(payload))
     else:
         log_query("needs_more_detail", query, domain=result["domain"])
 
@@ -384,6 +412,32 @@ def ask(payload: Question):
         "grounded": True,
         "answer": answer,
     }
+
+
+# ---- Optional extras (outbreak watch, farm records, find help, summaries) ----
+# Included only if they load; a fault there must never stop the advisor.
+try:
+    from murimi_plus.router import create_router as _extras_router
+    app.include_router(_extras_router(_chunks, _rag, QUERY_LOG_PATH,
+                                      os.path.join(_DATA_DIR, "farm_records.sqlite3")))
+    from murimi_plus.views import DESIGN_VERSION as _extras_design
+    print(f"Extras loaded (design v{_extras_design}): /extras/dashboard, /extras/farm, /extras/help, /extras/photo")
+except Exception as _e:  # noqa: BLE001
+    print(f"Extras not loaded ({_e}) - the advisor works without them.")
+
+
+# ---- Officer review (MCP agent + human approval), at /officer ----
+# The same agent as `python -m challenge_agent web`, inside this app. Only this
+# laptop can open it (phones on the Wi-Fi get "local access only"), because
+# approving advice is the officer's job. Needs: pip install mcp langgraph httpx
+# In the packaged .exe the agent starts its MCP server as "MurimiFara.exe --mcp-server".
+OFFICER_DB_PATH = os.path.join(_DATA_DIR, "officer_review.sqlite3")
+try:
+    from challenge_agent.review_app import create_app as _officer_app
+    app.mount("/officer", _officer_app(OFFICER_DB_PATH, model_url=LLAMA_SERVER_URL, prefix="/officer"))
+    print("Officer review loaded: http://127.0.0.1:8000/officer/  (this laptop only)")
+except Exception as _e:  # noqa: BLE001
+    print(f"Officer review not loaded ({_e}) - the advisor works without it.")
 
 
 @app.get("/api/health")

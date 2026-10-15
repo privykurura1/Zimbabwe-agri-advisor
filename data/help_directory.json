@@ -1,0 +1,203 @@
+{
+  "about": "Who a farmer should contact. Replace every FILL IN with a real, checked contact (name, phone, town) and the date you checked it. Contacts still saying FILL IN are never shown. type is one of: vet, animal_health, dip_tank, agritex.",
+  "contacts": {
+    "National": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Bulawayo": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Harare": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Manicaland": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Mashonaland Central": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Mashonaland East": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Mashonaland West": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Masvingo": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Matabeleland North": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Matabeleland South": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ],
+    "Midlands": [
+      {
+        "type": "vet",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      },
+      {
+        "type": "agritex",
+        "name": "FILL IN: office name",
+        "phone": "FILL IN",
+        "place": "",
+        "hours": "",
+        "checked_on": ""
+      }
+    ]
+  }
+}

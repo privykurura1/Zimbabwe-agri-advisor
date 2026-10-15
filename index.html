@@ -313,6 +313,79 @@
   .panel-body { padding: 0.9rem 1rem 0.6rem; }
 
   .panel.urgent { border-color: var(--danger); }
+  /* ---------- Extras: tools bar and the box under answers ---------- */
+  .lanbar .extrasbar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem 0.9rem;
+  }
+  .extrasbar .lan { margin-right: auto; }
+  .extrasbar .province { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .extrasbar select {
+    font: inherit; font-size: 0.8rem; color: #e9efe6;
+    background: var(--canopy); border: 1px solid rgba(233, 239, 230, 0.28);
+    border-radius: 0.5rem; padding: 0.2rem 0.45rem; cursor: pointer;
+  }
+  .extrasbar select:hover, .extrasbar select:focus { border-color: var(--harvest); outline: none; }
+  .extrasbar select option { color: var(--ink); background: #fff; }
+  .extrasbar .tools { display: inline-flex; flex-wrap: wrap; gap: 0.35rem; }
+  .extrasbar .tools a {
+    color: #e9efe6; text-decoration: none; white-space: nowrap;
+    border: 1px solid rgba(233, 239, 230, 0.22); border-radius: 999px;
+    padding: 0.18rem 0.65rem;
+  }
+  .extrasbar .tools a:hover, .extrasbar .tools a:focus-visible {
+    border-color: var(--harvest); color: #fff; outline: none;
+  }
+
+  .extras {
+    border-top: 1px solid var(--rule);
+    padding: 0.8rem 1rem 0.9rem;
+    display: grid; gap: 0.8rem;
+    font-size: 0.92rem;
+  }
+  .extras-head {
+    margin: 0 0 0.4rem; font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .extras-summary {
+    border-left: 3px solid var(--harvest);
+    background: #fdf8ec;
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 0.55rem 0.75rem;
+    line-height: 1.5;
+  }
+  .extras-summary + .extras-summary { margin-top: 0.4rem; }
+  .extras-summary .lang {
+    display: inline-block; margin-right: 0.4rem;
+    font-size: 0.72rem; font-weight: 600; color: var(--leaf-dark);
+    background: #e7f1e4; border-radius: 999px; padding: 0.05rem 0.5rem;
+    vertical-align: 0.08em;
+  }
+  .officer-row { border-top: 1px solid var(--rule); padding: 0.6rem 1rem; display: flex; flex-wrap: wrap;
+    align-items: center; gap: 0.4rem 0.8rem; font-size: 0.8rem; color: var(--ink-3); }
+  .officer-link { font-weight: 600; color: var(--leaf-dark); text-decoration: none; border: 1px solid var(--rule);
+    border-radius: 999px; padding: 0.2rem 0.75rem; background: #fff; }
+  .officer-link:hover, .officer-link:focus-visible { border-color: var(--leaf); outline: none; }
+  .extras audio { display: block; width: 100%; max-width: 22rem; height: 2.2rem; margin-top: 0.45rem; }
+  .extras-outlook {
+    margin: 0; padding: 0.55rem 0.75rem; border-radius: 0.5rem;
+    background: #eef4fb; border: 1px solid #d3e1f1; color: var(--ink); line-height: 1.5;
+  }
+  .extras-outlook small { display: block; color: var(--ink-3); margin-top: 0.15rem; }
+  .contacts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+  .contact {
+    display: flex; align-items: center; gap: 0.75rem;
+    background: #f7f9f5; border: 1px solid var(--rule); border-radius: 0.6rem;
+    padding: 0.5rem 0.6rem 0.5rem 0.8rem;
+  }
+  .contact-who { flex: 1; min-width: 0; }
+  .contact-who b { display: block; font-weight: 600; color: var(--ink); }
+  .contact-who span { font-size: 0.8rem; color: var(--ink-3); }
+  .contact-call {
+    flex-shrink: 0; text-decoration: none; font-weight: 600; font-size: 0.85rem;
+    color: #fff; background: var(--leaf); border-radius: 0.5rem; padding: 0.4rem 0.75rem;
+    white-space: nowrap;
+  }
+  .contact-call:hover, .contact-call:focus-visible { background: var(--leaf-dark); outline: none; }
   .panel.urgent .panel-head { background: var(--danger-wash); color: var(--danger); border-bottom-color: rgba(184, 67, 44, 0.25); }
   .panel.urgent .panel-head b { color: var(--danger); }
 
@@ -507,6 +580,9 @@
     .photo-btn .label { display: none; }
     .example .lang { width: auto; }
     .example { flex-direction: column; gap: 0.2rem; }
+    .extrasbar .lan { display: none; }
+    .extrasbar .tools { width: 100%; }
+    .contact { flex-wrap: wrap; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -657,6 +733,58 @@ function readBigText() {
   try { return localStorage.getItem("mf-big-text") === "1"; } catch (e) { return false; }
 }
 
+const PROVINCES = ["Bulawayo", "Harare", "Manicaland", "Mashonaland Central", "Mashonaland East",
+  "Mashonaland West", "Masvingo", "Matabeleland North", "Matabeleland South", "Midlands"];
+const LANG_NAMES = { en: "English", sn: "Shona", nd: "Ndebele" };
+// Officer review (/officer) only opens on the laptop itself, not on phones.
+const ON_THIS_LAPTOP = ["127.0.0.1", "localhost", "::1", "[::1]"].includes(window.location.hostname);
+
+function readProvince() {
+  try { return localStorage.getItem("mf-province") || ""; } catch (e) { return ""; }
+}
+
+// Checked, human-written extras shown under an answer: a short summary in the
+// farmer's language (only entries a person has reviewed), a recorded clip if
+// one exists, and contacts for their province. Nothing here comes from the model.
+function ExtrasBox({ extras }) {
+  if (!extras) return null;
+  const { summary, contacts, outlook } = extras;
+  if (!summary && !(contacts || []).length && !outlook) return null;
+  return h(
+    "div",
+    { className: "extras" },
+    summary && h(
+      "section",
+      null,
+      h("p", { className: "extras-head" }, "In short"),
+      summary.texts.map((t, i) =>
+        h("div", { key: i, className: "extras-summary" },
+          h("span", { className: "lang" }, LANG_NAMES[t.lang] || t.lang), t.text,
+          t.audio && h("audio", { controls: true, preload: "none", src: `${API_URL}${t.audio}`,
+            "aria-label": `Listen in ${LANG_NAMES[t.lang] || t.lang}` })))
+    ),
+    outlook && h(
+      "section",
+      null,
+      h("p", { className: "extras-head" }, "Rainfall outlook"),
+      h("p", { className: "extras-outlook" },
+        h("b", null, `Region ${outlook.region}: ${outlook.outlook}`),
+        outlook.note ? ` - ${outlook.note}` : "",
+        h("small", null, [outlook.season, outlook.source, outlook.issued && `issued ${outlook.issued}`].filter(Boolean).join(" · ")))
+    ),
+    (contacts || []).length > 0 && h(
+      "section",
+      null,
+      h("p", { className: "extras-head" }, "Who to call"),
+      h("ul", { className: "contacts" }, contacts.map((c, i) =>
+        h("li", { key: i, className: "contact" },
+          h("div", { className: "contact-who" }, h("b", null, c.name),
+            h("span", null, [c.place, c.hours].filter(Boolean).join(" · ") || c.province)),
+          h("a", { className: "contact-call", href: `tel:${c.phone.replace(/\s+/g, "")}` }, c.phone))))
+    )
+  );
+}
+
 function App() {
   const [entries, setEntries] = useState([]);
   const [question, setQuestion] = useState("");
@@ -666,6 +794,7 @@ function App() {
   const [imageLoading, setImageLoading] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const [bigText, setBigText] = useState(readBigText);
+  const [province, setProvince] = useState(readProvince);
   const mainRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -673,6 +802,10 @@ function App() {
     document.documentElement.classList.toggle("big-text", bigText);
     try { localStorage.setItem("mf-big-text", bigText ? "1" : "0"); } catch (e) {}
   }, [bigText]);
+
+  useEffect(() => {
+    try { localStorage.setItem("mf-province", province); } catch (e) {}
+  }, [province]);
 
   useEffect(() => {
     fetch(`${API_URL}/api/health`)
@@ -695,16 +828,17 @@ function App() {
     setEntries((prev) => [
       ...prev,
       { type: "question", text: q },
-      { type: "answer", text: "", sources: [] },
+      { type: "answer", text: "", sources: [], question: q },
     ]);
 
     try {
       const res = await fetch(`${API_URL}/api/ask/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: q }),
+        body: JSON.stringify({ question: q, province }),
       });
       if (!res.ok || !res.body) throw new Error("Backend returned an error");
+      let extrasQuery = null;
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -731,6 +865,10 @@ function App() {
               const meta = JSON.parse(firstLine.replace("META:::", ""));
               sources = meta.sources || [];
               urgent = meta.urgent === true;
+              if ((meta.entry_ids || []).length) {
+                extrasQuery = new URLSearchParams({ ids: meta.entry_ids.join(","), language: meta.language || "english",
+                  province, domain: meta.domain || "animal", region: meta.region || "" }).toString();
+              }
             } catch (e) {}
           } else if (firstLine.startsWith("SOURCES:::")) {
             try { sources = JSON.parse(firstLine.replace("SOURCES:::", "")); } catch (e) {}
@@ -761,6 +899,18 @@ function App() {
         }
         return updated;
       });
+      if (extrasQuery) {
+        // Optional: if the extras are not installed this simply finds nothing.
+        fetch(`${API_URL}/api/extras/answer?${extrasQuery}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((extras) => extras && setEntries((prev) => {
+            const updated = [...prev];
+            const last = updated[updated.length - 1];
+            if (last && last.type === "answer") updated[updated.length - 1] = { ...last, extras };
+            return updated;
+          }))
+          .catch(() => {});
+      }
     } catch (err) {
       setEntries((prev) => [
         ...prev.slice(0, -1),
@@ -870,8 +1020,24 @@ function App() {
     )
   );
 
-  const lanbar = lanAddress &&
-    h("div", { className: "lanbar" }, h("div", null, "Phones on this Wi‑Fi can open ", h("strong", null, lanAddress)));
+  const lanbar = h(
+    "div",
+    { className: "lanbar" },
+    h(
+      "div",
+      { className: "extrasbar" },
+      lanAddress && h("span", { className: "lan" }, "Phones on this Wi‑Fi can open ", h("strong", null, lanAddress)),
+      h("label", { className: "province" }, "Province",
+        h("select", { value: province, onChange: (e) => setProvince(e.target.value), "aria-label": "Your province" },
+          h("option", { value: "" }, "Not set"),
+          PROVINCES.map((p) => h("option", { key: p, value: p }, p)))),
+      h("nav", { className: "tools", "aria-label": "Farm tools" },
+        h("a", { href: "/extras/farm" }, "Farm records"),
+        h("a", { href: "/extras/help" }, "Find help"),
+        h("a", { href: "/extras/dashboard" }, "Outbreak watch"),
+        ON_THIS_LAPTOP && h("a", { href: "/officer/" }, "Officer review"))
+    )
+  );
 
   const welcome = entries.length === 0 && h(
     React.Fragment,
@@ -960,7 +1126,15 @@ function App() {
                     { className: "grounding" },
                     h("p", null, "Based on these guides"),
                     h("ul", null, entry.sources.map((s, j) => h("li", { key: j }, s)))
-                  )
+                  ),
+                h(ExtrasBox, { extras: entry.extras }),
+                ON_THIS_LAPTOP && entry.question && entry.text && !loading && h(
+                  "div",
+                  { className: "officer-row" },
+                  h("a", { className: "officer-link", href: `/officer/?q=${encodeURIComponent(entry.question)}` },
+                    "Send to an officer for review"),
+                  h("span", null, "The officer checks the agent's draft before anything goes to the farmer.")
+                )
               )
         );
       })

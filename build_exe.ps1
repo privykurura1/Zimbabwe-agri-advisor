@@ -58,7 +58,7 @@ if ($entries -ne "55") {
 # ---- 3. Files the app needs ----
 Step "Checking the files the app needs"
 foreach ($f in @("desktop_app.py", "app.py", "rag.py", "index.html", "corpus_livestock_crops.md",
-                 "murimifara.ico", $ModelFile)) {
+                 "murimifara.ico", $ModelFile, "challenge_agent\server.py", "murimi_plus\router.py")) {
     if (-not (Test-Path $f)) { Fail "missing $f" }
 }
 if (-not (Test-Path "vendor")) { Fail "missing the vendor folder (React files for the page)" }
@@ -84,7 +84,9 @@ Step "Preparing a clean build environment (buildenv)"
 # separate environment with ONLY what app.py, rag.py and desktop_app.py import.
 $BuildPython = ".\buildenv\Scripts\python.exe"
 $Needed = @("fastapi", "uvicorn", "python-multipart", "scikit-learn", "numpy",
-            "opencv-python-headless", "pywebview", "pyinstaller")
+            "opencv-python-headless", "pywebview", "pyinstaller",
+            # Officer review (MCP agent)
+            "mcp==1.29.0", "langgraph==1.2.15", "httpx")
 if (-not (Test-Path $BuildPython)) {
     Write-Host "Creating buildenv (first time only, needs internet)..."
     python -m venv buildenv
@@ -93,11 +95,11 @@ if (-not (Test-Path $BuildPython)) {
     & $BuildPython -m pip install @Needed
     if ($LASTEXITCODE -ne 0) { Fail "could not install the build libraries into buildenv" }
 }
-& $BuildPython -c "import fastapi, uvicorn, multipart, sklearn, numpy, cv2, webview, PyInstaller; print('buildenv OK')"
+& $BuildPython -c "import fastapi, uvicorn, multipart, sklearn, numpy, cv2, webview, PyInstaller, mcp, langgraph, httpx; print('buildenv OK')"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "buildenv is incomplete - installing the missing libraries..."
     & $BuildPython -m pip install @Needed
-    & $BuildPython -c "import fastapi, uvicorn, multipart, sklearn, numpy, cv2, webview, PyInstaller"
+    & $BuildPython -c "import fastapi, uvicorn, multipart, sklearn, numpy, cv2, webview, PyInstaller, mcp, langgraph, httpx"
     if ($LASTEXITCODE -ne 0) { Fail "buildenv still incomplete - delete the buildenv folder and run again" }
 }
 
@@ -110,6 +112,9 @@ $Exclude = @("torch", "torchvision", "torchaudio", "tensorflow", "pyarrow", "pan
            ForEach-Object { "--exclude-module=$_" }
 & $BuildPython -m PyInstaller --onedir --noconsole --noconfirm --icon=murimifara.ico `
     --collect-all cv2 --hidden-import multipart --hidden-import multipart.multipart `
+    --hidden-import murimi_plus.router --hidden-import murimi_plus.hardware `
+    --hidden-import challenge_agent.server --hidden-import challenge_agent.review_app `
+    --hidden-import mcp.server.fastmcp --hidden-import mcp.client.stdio --collect-submodules langgraph `
     @Exclude --name MurimiFara desktop_app.py
 if ($LASTEXITCODE -ne 0) { Fail "PyInstaller failed - see the messages above" }
 
@@ -118,6 +123,10 @@ Step "Copying the app's files into $Dist"
 Copy-Item index.html, rag.py, corpus_livestock_crops.md -Destination $Dist -Force
 if ($HasPhotoModel) { Copy-Item faw_classifier.onnx -Destination $Dist -Force }
 Copy-Item vendor -Destination $Dist -Recurse -Force
+# Extras (murimi_plus): hand-edited data, recorded audio, extra photo checks.
+foreach ($sub in @("data", "audio", "models")) {
+    if (Test-Path $sub) { Copy-Item $sub -Destination $Dist -Recurse -Force }
+}
 # Pictures the page uses (logo etc.). The page is served by the app, so any
 # image index.html refers to must sit in the app folder.
 Get-ChildItem -File -Include *.png, *.jpg, *.jpeg, *.svg, *.gif, *.webp, *.ico -Path .\* |
@@ -164,6 +173,21 @@ foreach ($img in $pageImages) {
     }
 }
 if ($distEntries -ne $entries) { Fail "the app folder has $distEntries entries, the project has $entries" }
+
+# Officer review: the agent starts its MCP server as "MurimiFara.exe --mcp-server".
+# Prove that works in this build by drafting one advisory (no model needed).
+Step "Testing officer review (MCP agent) in the built app"
+$selftest = Join-Path ($env:LOCALAPPDATA + "\MurimiFara") "murimifara_selftest.txt"
+Remove-Item $selftest -ErrorAction SilentlyContinue
+$p = Start-Process -FilePath "$Dist\MurimiFara.exe" -ArgumentList "--mcp-selftest" -PassThru
+if (-not $p.WaitForExit(120000)) { $p.Kill(); Write-Host "WARNING: officer review self-test timed out" -ForegroundColor Yellow }
+if (Test-Path $selftest) {
+    $result = Get-Content $selftest -Raw
+    if ($result.StartsWith("OK")) { Write-Host "Officer review works in the exe." -ForegroundColor Green }
+    else { Write-Host "WARNING: officer review does not work in this build:`n$result" -ForegroundColor Yellow }
+} else {
+    Write-Host "WARNING: officer review self-test wrote no result (expected $selftest)" -ForegroundColor Yellow
+}
 
 $size = "{0:N1}" -f ((Get-ChildItem $Dist -Recurse | Measure-Object Length -Sum).Sum / 1GB)
 Write-Host "`nBUILD DONE" -ForegroundColor Green

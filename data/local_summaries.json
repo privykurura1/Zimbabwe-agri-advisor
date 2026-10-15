@@ -1,0 +1,445 @@
+{
+  "about": "One short summary per knowledge entry. Write sn (Shona) and nd (Ndebele), check en, then set reviewed to true and reviewed_by to your name. Only reviewed entries are shown.",
+  "entries": {
+    "A1": {
+      "title": "Zimbabwe's Five Natural Regions (agro-ecological zones)",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "B1": {
+      "title": "Theileriosis (\"January Disease\")",
+      "en": "This is the deadliest TBD in Zimbabwe currently — treat as an emergency. Isolate the animal, contact a veterinary officer or dip tank attendant immediately. Do not wait to see if it improves.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "B2": {
+      "title": "Anaplasmosis (\"Gallsickness\")",
+      "en": "Contact a vet for treatment options available locally. Recovered animals remain lifelong carriers and can still trigger new outbreaks in the herd.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "B3": {
+      "title": "Babesiosis (\"Redwater\")",
+      "en": "Veterinary treatment needed promptly — can be fatal if untreated.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "B4": {
+      "title": "Heartwater (Cowdriosis)",
+      "en": "Veterinary emergency — nervous signs plus fever in a ruminant is a strong heartwater indicator; seek treatment immediately.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "B5": {
+      "title": "General tick control guidance (applies across B1–B4)",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "C1": {
+      "title": "Newcastle Disease (ND)",
+      "en": "No effective treatment once infected — focus is prevention. If ND is suspected, isolate the flock immediately, avoid moving birds on/off the property, and contact a veterinary/extension officer, since ND is a reportable disease. Routine vaccination (e.g. I-2 vaccine, heat stable and suited to village conditions without a strict cold chain) is the primary effective control — studies show vaccinated",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "C2": {
+      "title": "Infectious Bronchitis (IB)",
+      "en": "No specific cure — supportive care (warmth, reduce stress, ensure access to water) while the flock recovers. Watch closely for secondary bacterial infections. Vaccination is available and effective where accessible.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "C3": {
+      "title": "Coccidiosis",
+      "en": "Keep litter dry and clean — this is the single most effective prevention measure. Anticoccidial treatment is available and effective if caught early; consult an animal health worker for dosing since untreated outbreaks can cause high mortality in young birds.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "C4": {
+      "title": "Fowl Typhoid / Pullorum Disease",
+      "en": "Treatment is generally not recommended even if birds survive, since survivors often become lifelong carriers and can silently infect future generations of the flock through eggs. Prevention is the priority — source new birds from a clean, disease-tested flock where possible, and isolate/cull affected birds to protect the rest of the flock.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "C5": {
+      "title": "General smallholder poultry biosecurity (applies across C1–C4)",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "E1": {
+      "title": "Gastrointestinal Parasites (Haemonchus, Eimeria)",
+      "en": "Check inner eyelid/gum color regularly as a simple anemia screen (pale = concern, especially combined with weakness or jaw swelling). Deworming treatment is effective but growing parasite resistance to common dewormers is a recognized regional problem — rotate treatment types where possible and consult an animal health worker rather than treating repeatedly with the same product if it stops workin",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "E2": {
+      "title": "Heartwater in Goats and Sheep",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "E3": {
+      "title": "Peste des Petits Ruminants (PPR) — Regional Awareness",
+      "en": "Because of its severity and reportable status where confirmed, any goat/sheep flock showing this symptom combination should be isolated immediately and reported to a veterinary officer rather than treated informally.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "E4": {
+      "title": "General smallholder goat/sheep husbandry (applies across E1–E3)",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "D1": {
+      "title": "Maize — Fall Armyworm",
+      "en": "Scout fields regularly from emergence; early detection is critical. Recommend integrated management (approved pesticides, timing sprays for early larval stages, and where relevant, biological/cultural controls) — advise farmer to confirm current approved chemical options with local extension, as registered products change.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "D2": {
+      "title": "Maize/Tobacco/Groundnuts — Planting Windows by Region",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "D3": {
+      "title": "Tobacco — Zimbabwe context",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "F1": {
+      "title": "Cow passing red or brown urine",
+      "en": "treat this as urgent. Keep the animal quiet, provide access to clean water, and contact a veterinary professional promptly. Do not wait for severe weakness or collapse.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "F2": {
+      "title": "Cow with fever plus swollen lymph nodes",
+      "en": "emergency veterinary attention. Ask about dipping history and recent tick burden. Do not advise the farmer to \"watch for a few days.\"",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "F3": {
+      "title": "Animal with fever plus nervous signs",
+      "en": "isolate safely where possible and seek help immediately.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "F4": {
+      "title": "Pale eyelids or gums in goat/sheep",
+      "en": "contact an animal-health worker for appropriate parasite management. Repeatedly using the same dewormer without checking response can contribute to treatment failure/resistance.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "F5": {
+      "title": "Chicken with twisted neck, paralysis, green diarrhea, sudden deaths",
+      "en": "isolate the flock, stop movement/sale of birds, and contact a veterinary/extension officer. There is no reliable curative treatment for the viral infection itself; prevention and vaccination are central.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "F6": {
+      "title": "Chicken with bloody diarrhea",
+      "en": "keep litter dry and clean, isolate visibly sick birds if practical, and obtain appropriate anticoccidial advice early.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "F7": {
+      "title": "Many animals die suddenly with little warning",
+      "en": "do not guess. Keep people and animals away from carcasses. Do not cut open a carcass when anthrax is a possibility. Contact Veterinary Services.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G1": {
+      "title": "Lumpy Skin Disease (LSD)",
+      "en": "isolate suspected animals, reduce insect exposure where practical, and contact Veterinary Services. Vaccination is an important control measure where advised by authorities.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G2": {
+      "title": "Foot-and-Mouth Disease (FMD)",
+      "en": "stop movement of suspected animals immediately and notify Veterinary Services. Keep the herd separate from neighboring livestock.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G3": {
+      "title": "Anthrax",
+      "en": "vaccination in risk/outbreak areas according to official guidance.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G4": {
+      "title": "Blackleg",
+      "en": "this can progress extremely quickly. Seek veterinary help immediately.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G5": {
+      "title": "Mastitis",
+      "en": "keep milking hygiene high, separate abnormal milk from milk for consumption/sale, and seek veterinary guidance for treatment.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G6": {
+      "title": "Bloat",
+      "en": "severe bloat is an emergency because pressure can prevent breathing. Remove access to the suspected feed and contact an experienced animal-health worker immediately.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G7": {
+      "title": "Calf diarrhea (scours)",
+      "en": "dehydration is often the immediate danger. Keep the calf warm and clean, maintain safe access to fluids according to professional advice, isolate infectious cases, and seek veterinary help for severe cases.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "G8": {
+      "title": "Pneumonia in calves/cattle",
+      "en": "isolate affected animals, improve ventilation without chilling, reduce stress, and obtain veterinary diagnosis because viral and bacterial causes cannot be reliably separated by appearance alone.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "H1": {
+      "title": "Difficult birth (dystocia)",
+      "en": "obtain experienced/veterinary assistance early. Excessive pulling can injure or kill the cow and calf.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "H2": {
+      "title": "Retained placenta",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "H3": {
+      "title": "Uterine prolapse",
+      "en": "keep the tissue as clean and protected from injury as possible and contact a veterinarian urgently.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "I1": {
+      "title": "Infectious Bursal Disease (Gumboro)",
+      "en": "isolate affected flock, improve hygiene and supportive care, and consult animal-health services. Prevention depends heavily on biosecurity and correctly timed vaccination programmes.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "I2": {
+      "title": "Fowl Pox",
+      "en": "isolate affected birds, reduce mosquitoes, improve hygiene, and seek advice if mouth/throat lesions interfere with eating or breathing.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "I3": {
+      "title": "Heat stress in chickens",
+      "en": "provide shade, ventilation and abundant cool clean water. Avoid unnecessary handling during the hottest hours.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "J1": {
+      "title": "Maize Streak Virus (MSV)",
+      "en": "use locally recommended resistant/tolerant varieties where available, control volunteer maize/grass hosts where practical, and seek current extension advice on vector and planting management.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "J2": {
+      "title": "Grey Leaf Spot (GLS)",
+      "en": "resistant varieties, crop rotation, residue management where appropriate, balanced agronomy, and fungicides only when economically justified and registered for the crop/disease.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "J3": {
+      "title": "Maize stalk borers",
+      "en": "scout early. Destroy heavily infested residues where agronomically appropriate, use recommended resistant/tolerant practices, and confirm current registered controls with extension services.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "J4": {
+      "title": "Maize nutrient deficiency vs disease",
+      "en": "avoid recommending pesticide when symptoms fit nutrition, moisture, or soil constraints better than a pest/disease.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "K1": {
+      "title": "Groundnut Rosette Disease",
+      "en": "use resistant varieties where locally available, plant at the recommended population and timing for the area, remove volunteer hosts where appropriate, and manage aphid/vector risk according to current extension advice.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "K2": {
+      "title": "Groundnut aflatoxin risk",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "L1": {
+      "title": "Tomato late blight",
+      "en": "remove badly infected plant material where practical, avoid prolonged leaf wetness, improve airflow, and confirm registered fungicide options locally.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "L2": {
+      "title": "Tomato bacterial wilt",
+      "en": "avoid moving contaminated soil, rotate away from susceptible solanaceous crops where feasible, use clean planting material and resistant varieties when available, and improve field sanitation/drainage.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "L3": {
+      "title": "Tuta absoluta (tomato leaf miner)",
+      "en": "monitor with traps where available, destroy infested crop residues, reduce alternate hosts, use biological/IPM options, and rotate insecticide modes of action only among products registered locally.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "L4": {
+      "title": "Aphids",
+      "en": "inspect natural enemies first, remove badly infested growth when practical, manage weeds/alternate hosts, and use registered controls only when needed.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "L5": {
+      "title": "Whiteflies",
+      "en": "sanitation, weed-host control, monitoring/traps, biological control where available, and careful insecticide rotation if chemical control is needed.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "M1": {
+      "title": "Crop drought stress vs disease",
+      "en": "",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "M2": {
+      "title": "Waterlogging",
+      "en": "improve drainage where possible and avoid automatically adding more water or fertilizer before checking root-zone conditions.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "M3": {
+      "title": "Livestock heat stress",
+      "en": "provide shade, ventilation, and abundant clean water; reduce handling and transport during peak heat. Collapse or severe breathing difficulty requires urgent professional help.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "N1": {
+      "title": "Suspected poisoning",
+      "en": "remove access to suspected source without putting people at risk, preserve a sample/photo of the feed or substance if safe, and call a veterinary professional urgently. Do not induce vomiting or give random household remedies.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    },
+    "N2": {
+      "title": "Mouldy feed",
+      "en": "avoid feeding badly moulded material, keep stores dry, control moisture and pests, and seek advice if multiple animals show reduced appetite, poor growth, reproductive problems, or sudden illness after a feed change.",
+      "sn": "",
+      "nd": "",
+      "reviewed": false,
+      "reviewed_by": ""
+    }
+  }
+}

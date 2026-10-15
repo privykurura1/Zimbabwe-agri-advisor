@@ -41,4 +41,8 @@ Thumbs.db
 # Inno Setup installer output - large binary, distributed via
 # GitHub Releases instead, never committed
 Output/
-*.exe
+*.exefarm_records.sqlite3
+officer_review.sqlite3
+farm_records.sqlite3
+officer_review.sqlite3
+query_log.jsonl

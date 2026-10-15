@@ -95,5 +95,34 @@ class ReviewPageTests(unittest.TestCase):
         self.assertIn("&lt;script&gt;", page)
 
 
+class MountedInMainAppTests(unittest.TestCase):
+    """Inside the main Murimi Fara app the page lives at /officer."""
+    def setUp(self):
+        from fastapi import FastAPI
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.path = Path(self.tmp.name) / "agent.sqlite3"
+        main = FastAPI()
+        main.mount("/officer", create_app(self.path, prefix="/officer"))
+        self.client = TestClient(main, base_url="http://127.0.0.1:8000")
+        self.addCleanup(self.client.close)
+
+    def test_links_and_redirects_use_prefix(self):
+        home = self.client.get("/officer/?q=cow+red+urine").text
+        self.assertIn("action='/officer/draft'", home)
+        self.assertIn(">cow red urine</textarea>", home)
+        r = self.client.post("/officer/draft", data={"query": QUESTION}, follow_redirects=False)
+        self.assertEqual(r.status_code, 303)
+        self.assertTrue(r.headers["location"].startswith("/officer/advisory/"))
+        page = self.client.get(r.headers["location"]).text
+        self.assertIn("action='/officer/advisory/", page)
+        self.assertNotIn("href='/advisory/", page)
+
+    def test_phones_on_wifi_are_refused(self):
+        phone = TestClient(self.client.app, base_url="http://192.168.1.20:8000")
+        self.addCleanup(phone.close)
+        self.assertEqual(phone.get("/officer/").status_code, 403)
+
+
 if __name__ == "__main__":
     unittest.main()

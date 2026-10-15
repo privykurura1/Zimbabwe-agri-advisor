@@ -57,6 +57,7 @@ PyInstaller creates (dist/MurimiFara/).
 import os
 import sys
 import subprocess
+import json
 import tempfile
 import threading
 import time
@@ -138,19 +139,29 @@ def log_error(context, exc):
         pass
 
 
+def llama_settings():
+    """Model, threads and context sized for this computer (murimi_plus.hardware),
+    falling back to the original fixed settings if that cannot run."""
+    try:
+        from murimi_plus.hardware import choose
+        args, why = choose(BASE_DIR)
+        try:
+            with open(os.path.join(DATA_DIR or BASE_DIR, "murimifara_hardware.txt"), "w", encoding="utf-8") as f:
+                f.write(why + "\n")
+        except OSError:
+            pass
+        return args
+    except Exception:
+        return ["-m", MODEL_PATH, "-t", "4", "-c", "4096"]
+
+
 def start_llama_server():
     """Starts the model server completely hidden - no console window
     pops up, unlike when we ran this manually from a terminal before."""
     global llama_process
     creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
     llama_process = subprocess.Popen(
-        [
-            LLAMA_SERVER_PATH,
-            "-m", MODEL_PATH,
-            "-t", "4",
-            "-c", "4096",
-            "--port", "8080",
-        ],
+        [LLAMA_SERVER_PATH, *llama_settings(), "--port", "8080"],
         creationflags=creationflags,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
@@ -244,7 +255,46 @@ def wait_for_backend(timeout_seconds=90):
     return False
 
 
+def run_mcp_server():
+    """The packaged app has no python.exe, so the officer-review agent starts its
+    MCP tool server by running this same exe with --mcp-server. It talks over
+    stdin/stdout only and never opens a window or starts the model."""
+    # A windowed exe may start with sys.stdin/stdout set to None even though the
+    # parent passed pipes; reopen them from the inherited file descriptors.
+    if sys.stdin is None:
+        sys.stdin = open(0, "r", encoding="utf-8", closefd=False)
+    if sys.stdout is None:
+        sys.stdout = open(1, "w", encoding="utf-8", closefd=False)
+    if sys.stderr is None:
+        sys.stderr = open(os.devnull, "w", encoding="utf-8")
+    from challenge_agent.server import mcp
+    mcp.run(transport="stdio")
+
+
+def run_mcp_selftest():
+    """Used by build_exe.ps1 after building: drafts one advisory through the real
+    MCP server (started as `MurimiFara.exe --mcp-server`) into a throwaway database
+    and writes OK or the error to murimifara_selftest.txt."""
+    import asyncio
+    result_path = os.path.join(DATA_DIR or BASE_DIR, "murimifara_selftest.txt")
+    try:
+        from challenge_agent.orchestrator import draft
+        db = os.path.join(tempfile.mkdtemp(), "selftest.sqlite3")
+        result = asyncio.run(draft("my maize has ragged holes and frass in the whorl", db))
+        status = "OK " + result["id"] if result.get("id") else "FAIL " + json.dumps(result)
+    except Exception as exc:  # noqa: BLE001
+        status = f"FAIL {type(exc).__name__}: {exc}\n{traceback.format_exc()}"
+    with open(result_path, "w", encoding="utf-8") as f:
+        f.write(status + "\n")
+
+
 def main():
+    if "--mcp-server" in sys.argv:
+        run_mcp_server()
+        return
+    if "--mcp-selftest" in sys.argv:
+        run_mcp_selftest()
+        return
     try:
         start_llama_server()
 

@@ -18,7 +18,7 @@
 ; everything needed is inside this one file.
 
 #define MyAppName "Murimi Fara"
-#define MyAppVersion "1.1"
+#define MyAppVersion "1.2"
 #define MyAppPublisher "MPKCOMTECK Technologies (Private) Limited"
 #define MyAppExeName "MurimiFara.exe"
 

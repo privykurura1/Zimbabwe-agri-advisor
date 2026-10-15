@@ -2,11 +2,16 @@
 from functools import lru_cache
 from pathlib import Path
 import re
+import sys
 
 from rag import (build_index, chunk_id, fallback_answer, load_chunks,
                  retrieve_grounded, scope_guard)
 
-ROOT = Path(__file__).resolve().parents[1]
+# Folder holding corpus_livestock_crops.md, murimifara.png and data/: beside the
+# exe when packaged (PyInstaller puts this package inside _internal), else the
+# project folder.
+ROOT = (Path(sys.executable).resolve().parent if getattr(sys, "frozen", False)
+        else Path(__file__).resolve().parents[1])
 REGIONS = {"I", "II", "III", "IV", "V"}
 
 

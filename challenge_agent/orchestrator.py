@@ -18,7 +18,11 @@ from rag import build_prompt, detect_language, is_crop_prompt, prefill_of, tidy_
 from .knowledge import fetch_is_relevant, needs_region, validate_query, validate_region
 from .store import Store, digest
 
-ROOT = Path(__file__).resolve().parents[1]
+# Folder holding corpus_livestock_crops.md, murimifara.png and data/: beside the
+# exe when packaged (PyInstaller puts this package inside _internal), else the
+# project folder.
+ROOT = (Path(sys.executable).resolve().parent if getattr(sys, "frozen", False)
+        else Path(__file__).resolve().parents[1])
 FAO_URL = "https://www.fao.org/fall-armyworm/en/"
 # Same stop strings as the existing app (app.py).
 MODEL_STOP = ["<|im_end|>", "<|im_start|>", "FARMER'S MESSAGE:", "REFERENCE INFORMATION:", "\nQUESTION:"]
@@ -244,6 +248,15 @@ def build_graph(client, store, writer, online=False, require_external=False):
     return graph.compile()
 
 
+def server_args():
+    """How to start the MCP server as a child process. From source: python -m
+    challenge_agent.server. In the packaged app there is no python.exe, so the app's
+    own exe starts it (desktop_app.py handles --mcp-server)."""
+    if getattr(sys, "frozen", False):
+        return ["--mcp-server"]
+    return ["-m", "challenge_agent.server"]
+
+
 async def draft(query, db_path, region="", model_url=None, online=False, require_external=False):
     query = validate_query(query)
     region = validate_region(region) if region else ""
@@ -256,7 +269,7 @@ async def draft(query, db_path, region="", model_url=None, online=False, require
         return {"state": "needs_information", "message": "Which Natural Region (I–V) is your farm in?"}
     # Child has only the custom server and local database; approval is not in its tool set.
     env = dict(os.environ, MURIMI_AGENT_DB=str(Path(db_path).resolve()))
-    parameters = StdioServerParameters(command=sys.executable, args=["-m", "challenge_agent.server"],
+    parameters = StdioServerParameters(command=sys.executable, args=server_args(),
                                        cwd=str(ROOT), env=env)
     try:
         async with session(parameters) as client:

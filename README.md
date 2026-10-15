@@ -15,6 +15,32 @@ This repository contains two parts:
    Design Challenge**: an MCP-based agent that drafts advisories for extension
    officers to approve. [Jump to the agent](#african-agentic-ai-design-challenge-murimi-fara-extension-agent).
 
+## Two parts of one product: phone planner and laptop advisor
+
+Murimi Fara by MPKCOMTECK Technologies comes in two parts that do different jobs:
+
+| | Murimi Fara planner (Android) | Murimi Fara advisor (this repository) |
+|---|---|---|
+| Where | [Google Play](https://play.google.com/store/apps/details?id=com.fambai.goho) - on the farmer's own phone | A laptop at an AGRITEX office, with a lead farmer, or at a demo stand |
+| Job | **Planning:** how long food, water and feed will last, what to buy, what to sell, and a season plan | **Problems:** what is wrong with a sick animal or a damaged crop, and what to do now |
+| How | Calculations from the farmer's own numbers | A checked knowledge base and a small offline AI model |
+| Internet | Not needed | Not needed; phones on the laptop's Wi‑Fi can use it too |
+
+How they connect:
+
+- **Now:** a farmer uses the planner on their phone every day. When an animal or crop
+  has a problem, they ask the advisor on the laptop, either directly or from a phone
+  on the laptop's Wi‑Fi (the address is shown at the top of the advisor page).
+- **Planned, not built yet:**
+  1. An "Ask the advisor" button in the phone app.
+  2. The same checked contacts and short Shona/Ndebele summaries shipped inside the phone app.
+  3. Farm records and reminders moved to the phone, so reminders arrive as phone notifications.
+  4. Farmers sending questions from the phone to an extension officer, who approves the
+     answer before it is sent back by SMS.
+
+The AI model runs on the laptop only. Running it on phones has not been tested yet
+(see [docs/ANDROID_PLAN.md](docs/ANDROID_PLAN.md)).
+
 ## What the app does
 
 - **Livestock triage** - describe what you see (for example "my cow has a high
@@ -73,6 +99,34 @@ See `REPORT.md` and `technical_report.md` for design decisions and benchmarks.
 
 **Important:** Murimi Fara gives guidance, not a diagnosis. The knowledge base
 still needs review by a veterinarian and an agronomist before wide use with farmers.
+
+## Extras for real-world use
+
+These are optional and are loaded only if they work, so they cannot break the advisor
+(`murimi_plus/`, full guide in [docs/EXTRAS.md](docs/EXTRAS.md)):
+
+- **Outbreak watch** (`/extras/dashboard`): weekly counts of which diseases farmers
+  ask about, by province, with a simple alert when one rises sharply. It shows
+  counts only, never farmers' messages.
+- **Find help** (`/extras/help`): vet, AGRITEX and dip-tank contacts by province,
+  also shown under answers.
+- **Farm records and reminders** (`/extras/farm`): dated notes and repeating
+  reminders, such as weekly dipping in the hot wet season.
+- **Short summaries in Shona and Ndebele, with audio:** shown only after a speaker
+  and an expert have checked them.
+- **Seasonal rainfall outlook** next to planting advice, copied from the official
+  forecast.
+- **SMS:** an officer can text an approved advisory to a farmer through an Android
+  SMS gateway phone.
+- **More photo checks:** add trained image classifiers in `models/photo/`, with a
+  training script.
+- **Low-end mode:** smaller settings on laptops with little memory.
+- **Pilot kit:** an expert review sheet, a pilot plan, pilot metrics and a
+  partnership letter template.
+
+The contact list, the translations, the recordings and the rainfall outlook ship
+**empty** on purpose, so that they are filled in with checked, real information
+rather than guesses. Run the tests with `python -m unittest discover -s murimi_plus/tests -t .`
 
 ## African Agentic AI Design Challenge: Murimi Fara Extension Agent
 
