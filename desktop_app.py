@@ -62,6 +62,7 @@ import tempfile
 import threading
 import time
 import traceback
+import urllib.error
 import urllib.request
 
 # When built with --noconsole, there is no console attached at all, so
@@ -155,10 +156,53 @@ def llama_settings():
         return ["-m", MODEL_PATH, "-t", "4", "-c", "4096"]
 
 
+_instance_mutex = None   # held for the life of the app (single-instance check)
+
+
+def llama_already_running():
+    """True if a llama-server is already answering on port 8080 - for example
+    one left behind when the app was closed by force. Reusing it avoids a
+    second copy failing to start on the same port."""
+    try:
+        urllib.request.urlopen("http://127.0.0.1:8080/health", timeout=1.5)
+        return True
+    except urllib.error.HTTPError:
+        return True          # 503 = it is there, still loading the model
+    except Exception:
+        return False
+
+
+def already_open():
+    """Windows: True if another copy of Murimi Fara is already running.
+    Two copies fight over the same ports; when the first one is closed, the
+    second one's page loses its advisor ("Couldn't reach the advisor")."""
+    if sys.platform != "win32":
+        return False
+    try:
+        import ctypes
+        global _instance_mutex
+        _instance_mutex = ctypes.windll.kernel32.CreateMutexW(None, False, "Local\\MurimiFaraAdvisor")
+        return ctypes.windll.kernel32.GetLastError() == 183      # ERROR_ALREADY_EXISTS
+    except Exception:
+        return False
+
+
+def tell_already_open():
+    try:
+        import ctypes
+        ctypes.windll.user32.MessageBoxW(
+            None, "Murimi Fara is already open.\n\nLook for its window on the taskbar.",
+            "Murimi Fara", 0x40)
+    except Exception:
+        pass
+
+
 def start_llama_server():
     """Starts the model server completely hidden - no console window
     pops up, unlike when we ran this manually from a terminal before."""
     global llama_process
+    if llama_already_running():
+        return
     creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
     llama_process = subprocess.Popen(
         [LLAMA_SERVER_PATH, *llama_settings(), "--port", "8080"],
@@ -267,6 +311,9 @@ def run_mcp_server():
         sys.stdout = open(1, "w", encoding="utf-8", closefd=False)
     if sys.stderr is None:
         sys.stderr = open(os.devnull, "w", encoding="utf-8")
+    # Started by another MCP client (not by our own officer page): keep the
+    # agent's audit log in the app's data folder, not the read-only install folder.
+    os.environ.setdefault("MURIMI_AGENT_DB", os.path.join(DATA_DIR or BASE_DIR, "officer_review.sqlite3"))
     from challenge_agent.server import mcp
     mcp.run(transport="stdio")
 
@@ -294,6 +341,9 @@ def main():
         return
     if "--mcp-selftest" in sys.argv:
         run_mcp_selftest()
+        return
+    if already_open():
+        tell_already_open()
         return
     try:
         start_llama_server()

@@ -92,7 +92,10 @@ class StoreTests(unittest.TestCase):
         result = subprocess.run([sys.executable, "-m", "challenge_agent", "--db", str(self.path),
                                  "review", self.draft["id"], "--digest", self.draft["digest"],
                                  "--decision", "approve", "--reason", "Checked"],
-                                cwd=ROOT, capture_output=True, text=True, timeout=10)
+                                cwd=ROOT, capture_output=True, text=True, timeout=120,
+                                # No keyboard: on Windows the child would otherwise inherit the
+                                # console, see a terminal, and wait for a person to type.
+                                stdin=subprocess.DEVNULL)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("interactive terminal", result.stderr)
         self.assertEqual(self.store.get(self.draft["id"])["state"], "pending")
@@ -115,6 +118,9 @@ class KnowledgeTests(unittest.TestCase):
 
 class AgentTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
+        # Async tests run in debug mode, which prints "Executing ... took N seconds"
+        # for every slow step on a slow laptop. That is noise, not a failure.
+        asyncio.get_running_loop().slow_callback_duration = 60
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.path = Path(self.tmp.name) / "agent.sqlite3"
@@ -127,7 +133,8 @@ class AgentTests(unittest.IsolatedAsyncioTestCase):
         async with session(self.parameters()) as client:
             names = {t.name for t in (await client.list_tools()).tools}
             self.assertEqual(names, {"search_extension_knowledge", "get_natural_region_context",
-                                     "assess_extension_urgency", "stage_extension_advisory"})
+                                     "assess_extension_urgency", "stage_extension_advisory",
+                                     "get_farm_records", "add_farm_record", "get_outbreak_summary"})
             result = await call(client, "search_extension_knowledge", {"query": QUESTION})
             self.assertIn("D1", [s["id"] for s in result["sources"]])
             invalid = await client.call_tool("get_natural_region_context", {"region": "VI"})

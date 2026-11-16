@@ -174,7 +174,7 @@ why the agent did what it did.
 | --- | --- |
 | Orchestration | LangGraph 1.2 (open source) |
 | MCP | Official MCP Python SDK 1.29 (FastMCP server, stdio client) |
-| Custom MCP server | `challenge_agent/server.py`, 4 tools (below) |
+| Custom MCP server | `challenge_agent/server.py`, 7 tools (below) |
 | Third-party MCP server | Official `mcp-server-fetch` (modelcontextprotocol/servers) |
 | LLM | Qwen2.5-1.5B-Instruct Q4_K_M via llama.cpp `llama-server`, CPU, offline |
 | Retrieval | Existing TF-IDF retrieval + safety gates over 55 knowledge entries (`rag.py`) |
@@ -189,10 +189,15 @@ why the agent did what it did.
 | `assess_extension_urgency` | Flags time-critical cases and the referral to give | Triage only, not a diagnosis |
 | `get_natural_region_context` | Zimbabwe Natural Region I-V context | Only I-V accepted; not a weather forecast |
 | `stage_extension_advisory` | Stores the draft for human review | Server re-checks evidence itself; rejects invented citations, unsupported questions, planting advice without a region; can only create **pending** drafts |
+| `get_farm_records` | Reads the farm diary and open reminders | Read only |
+| `add_farm_record` | Adds a farm diary note | Two steps: the first call only returns a preview and a code; nothing is saved until the same note is sent back with that code, after the person agrees |
+| `get_outbreak_summary` | Which conditions farmers asked about this week vs the 4 weeks before, by province | Counts only, never farmers' messages; a rise is a reason to check, not proof of an outbreak |
 
 **Third-party:** `mcp-server-fetch`, called with one fixed public FAO fall-armyworm
 URL. No farmer text is sent to it, and the fetched page is shown to the officer as
 untrusted background; it is never given to the model as instructions.
+
+Test all 7 tools in the official MCP Inspector: see [docs/MCP_INSPECTOR.md](docs/MCP_INSPECTOR.md).
 
 There is deliberately **no MCP tool to approve or export**. Those exist only in the
 human interfaces.

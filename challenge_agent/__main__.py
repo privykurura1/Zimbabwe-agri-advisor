@@ -10,6 +10,23 @@ from .orchestrator import draft
 from .store import Store
 
 
+def human_terminal():
+    """True only when a person can type here. isatty() alone is not enough on
+    Windows: the empty input device (NUL) also counts as a "terminal" there."""
+    if not sys.stdin or not sys.stdin.isatty():
+        return False
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            import msvcrt
+            mode = ctypes.c_uint32()
+            handle = msvcrt.get_osfhandle(sys.stdin.fileno())
+            return bool(ctypes.windll.kernel32.GetConsoleMode(handle, ctypes.byref(mode)))
+        except (OSError, ValueError, AttributeError):
+            return False
+    return True
+
+
 def error_messages(exc):
     if isinstance(exc, BaseExceptionGroup):
         return "; ".join(error_messages(child) for child in exc.exceptions)
@@ -55,12 +72,15 @@ def main():
             result = store.get(args.id)
         elif args.command == "review":
             # Real terminal and typed confirmation required; no --yes bypass.
-            if not sys.stdin.isatty():
+            if not human_terminal():
                 raise ValueError("Human review requires an interactive terminal")
             advisory = store.get(args.id)
             print(json.dumps(advisory, ensure_ascii=False, indent=2))
             expected = args.decision.upper() + " " + args.digest
-            entered = input("After reviewing all evidence, type " + expected + ": ")
+            try:
+                entered = input("After reviewing all evidence, type " + expected + ": ")
+            except EOFError:
+                raise ValueError("Human review requires an interactive terminal") from None
             if entered != expected:
                 raise ValueError("Human confirmation did not match; no decision saved")
             result = store.review(args.id, args.digest, getpass.getuser(),
