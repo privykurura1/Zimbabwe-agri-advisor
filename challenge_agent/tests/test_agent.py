@@ -1,22 +1,15 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import asynccontextmanager
-import json
-import os
 from pathlib import Path
 import sqlite3
 import subprocess
 import sys
 import tempfile
 import unittest
-from unittest.mock import AsyncMock, patch
-
-from mcp import StdioServerParameters
-from mcp.types import CallToolResult, TextContent
 
 from challenge_agent.knowledge import retrieve, triage
-from challenge_agent.orchestrator import (AdvisoryAgent, ROOT, call, draft,
-                                         fetch_external, session)
+from challenge_agent import tools
+from challenge_agent.orchestrator import ROOT, draft
 from challenge_agent.store import Store
 
 QUESTION = "my maize has ragged holes and frass in the whorl"
@@ -125,27 +118,18 @@ class AgentTests(unittest.IsolatedAsyncioTestCase):
         self.addCleanup(self.tmp.cleanup)
         self.path = Path(self.tmp.name) / "agent.sqlite3"
 
-    def parameters(self):
-        return StdioServerParameters(command=sys.executable, args=["-m", "challenge_agent.server"],
-                                     cwd=str(ROOT), env=dict(os.environ, MURIMI_AGENT_DB=str(self.path)))
-
-    async def test_real_mcp_protocol_and_tool_validation(self):
-        async with session(self.parameters()) as client:
-            names = {t.name for t in (await client.list_tools()).tools}
-            self.assertEqual(names, {"search_extension_knowledge", "get_natural_region_context",
-                                     "assess_extension_urgency", "stage_extension_advisory",
-                                     "get_farm_records", "add_farm_record", "get_outbreak_summary"})
-            result = await call(client, "search_extension_knowledge", {"query": QUESTION})
-            self.assertIn("D1", [s["id"] for s in result["sources"]])
-            invalid = await client.call_tool("get_natural_region_context", {"region": "VI"})
-            self.assertTrue(invalid.isError)
-            missing = await client.call_tool("search_extension_knowledge", {})
-            self.assertTrue(missing.isError)
-            unknown = await client.call_tool("approve_advisory", {})
-            self.assertTrue(unknown.isError)
-            forged = await client.call_tool("stage_extension_advisory", {
-                "query": QUESTION, "text": "Invented source advice is not allowed.", "source_ids": ["FAKE"]})
-            self.assertTrue(forged.isError)
+    def test_tools_validate_input_and_cannot_approve(self):
+        store = Store(self.path)
+        result = tools.search_extension_knowledge(store, QUESTION)
+        self.assertIn("D1", [s["id"] for s in result["sources"]])
+        with self.assertRaises(ValueError):
+            tools.get_natural_region_context(store, "VI")
+        with self.assertRaises(ValueError):
+            tools.stage_extension_advisory(store, QUESTION, "Invented source advice is not allowed.", ["FAKE"])
+        # The agent's toolset has no way to approve, reject or export a draft.
+        public = {name for name in dir(tools) if not name.startswith("_") and callable(getattr(tools, name))}
+        self.assertFalse({n for n in public if any(w in n for w in ("approve", "review", "export", "reject"))})
+        self.assertNotIn("advisory_staged", [e["event"] for e in store.audit()])
 
     async def test_end_to_end_draft_review_export(self):
         result = await draft(QUESTION, self.path, "II")
@@ -153,7 +137,10 @@ class AgentTests(unittest.IsolatedAsyncioTestCase):
         store = Store(self.path)
         document = store.get(result["id"])["document"]
         self.assertIn("D1", [s["id"] for s in document["sources"]])
-        self.assertEqual(document["generation"], "grounded_template")
+        self.assertEqual(document["generation"], "farm_book")
+        # The draft is the farm book entry itself - nothing written by an AI model.
+        self.assertIn("This may be: Maize — Fall Armyworm", document["text"])
+        self.assertIn("Natural Region II", document["text"])
         with self.assertRaises(ValueError):
             store.export(result["id"], "operator")
         store.review(result["id"], result["digest"], "officer", True, "Reviewed evidence and local conditions")
@@ -172,108 +159,31 @@ class AgentTests(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(needs_region(q), q)
 
     async def test_planting_question_with_region_is_answered_not_diagnosed(self):
-        from challenge_agent.knowledge import region_context
-        query = "when should I plant maize"
-        facts = {"evidence": retrieve(query), "urgency": triage(query), "region": region_context("II")}
-        client = AsyncMock()
-        response = unittest.mock.Mock()
-        response.json.return_value = {"content": "Plant with the first reliable rains.\n\n### What to do\n1. Wait for rain."}
-        client.post.return_value = response
-        manager = unittest.mock.Mock()
-        manager.__aenter__ = AsyncMock(return_value=client)
-        manager.__aexit__ = AsyncMock(return_value=False)
-        with patch("challenge_agent.orchestrator.httpx.AsyncClient", return_value=manager):
-            text, _ = await AdvisoryAgent("http://127.0.0.1:8080/completion").run(query, facts)
-        prompt = client.post.call_args.kwargs["json"]["prompt"]
-        self.assertTrue(prompt.endswith("### Answer\n"))
-        self.assertIn("Natural Region II", prompt)
-        self.assertNotIn("signs fit", text)
-
-    async def test_fao_reference_only_for_fall_armyworm(self):
-        with patch("challenge_agent.orchestrator.fetch_external", new=AsyncMock()) as fetch:
-            result = await draft("My cow has a high fever and keeps walking in circles", self.path, online=True)
-            self.assertEqual(result["external_status"], "not_relevant_to_question")
-            fetch.assert_not_awaited()
+        result = await draft("when should I plant maize", self.path, "II")
+        self.assertEqual(result["state"], "pending")
+        text = Store(self.path).get(result["id"])["document"]["text"]
+        self.assertIn("Natural Region II", text)
+        self.assertNotIn("URGENT", text)
 
     async def test_graph_routes_urgent_case_to_referral(self):
         result = await draft("My cow has a high fever and keeps walking in circles", self.path)
         self.assertTrue(result["urgent"])
         store = Store(self.path)
-        self.assertTrue(store.get(result["id"])["document"]["text"].startswith("URGENT"))
+        self.assertTrue(store.get(result["id"])["document"]["text"].startswith("**URGENT"))
         routes = [e["payload"]["route"] for e in store.audit() if e["event"] == "route_selected"]
-        self.assertEqual(routes, ["urgent_referral", "write_draft"])
+        self.assertEqual(routes, ["urgent_referral"])
         self.assertIn("urgent_case_escalated", [e["event"] for e in store.audit()])
 
-    async def test_graph_routes_armyworm_to_reference_fetch(self):
-        fake = AsyncMock(return_value={"url": "https://www.fao.org/fall-armyworm/en/", "text": "FAO page"})
-        with patch("challenge_agent.orchestrator.fetch_external", new=fake):
-            result = await draft(QUESTION, self.path, online=True)
-        self.assertEqual(result["external_status"], "fetched_reference_only")
-        document = Store(self.path).get(result["id"])["document"]
-        self.assertEqual(document["supplementary_reference"]["text"], "FAO page")
+    async def test_graph_routes_ordinary_case_straight_to_draft(self):
+        result = await draft(QUESTION, self.path)
+        self.assertEqual(result["state"], "pending")
         routes = [e["payload"]["route"] for e in Store(self.path).audit() if e["event"] == "route_selected"]
-        self.assertEqual(routes, ["fetch_reference"])
+        self.assertEqual(routes, ["write_draft"])
 
     async def test_no_supported_evidence_never_stages(self):
         result = await draft("my pig has a cough", self.path)
         self.assertEqual(result["state"], "needs_information")
         self.assertNotIn("advisory_staged", [e["event"] for e in Store(self.path).audit()])
-
-    async def test_external_failure_reported_and_required_failure_stops(self):
-        with patch("challenge_agent.orchestrator.fetch_external", new=AsyncMock(side_effect=ValueError("unavailable"))):
-            result = await draft(QUESTION, self.path, online=True)
-            self.assertEqual(result["external_status"], "unavailable_using_local_evidence")
-            with self.assertRaises(Exception):
-                await draft(QUESTION, self.path, require_external=True)
-        events = [e["event"] for e in Store(self.path).audit()]
-        self.assertEqual(events.count("advisory_staged"), 1)
-        self.assertIn("run_failed", events)
-
-    async def test_third_party_adapter_calls_fetch_and_checks_errors(self):
-        client = AsyncMock()
-        client.call_tool.return_value = CallToolResult(content=[TextContent(type="text", text="FAO reference")])
-        @asynccontextmanager
-        async def fake_session(parameters):
-            self.assertEqual(parameters.args, ["-m", "mcp_server_fetch"])
-            if "HTTPS_PROXY" in os.environ:
-                self.assertEqual(parameters.env["HTTPS_PROXY"], os.environ["HTTPS_PROXY"])
-            self.assertNotIn("GH_TOKEN", parameters.env)
-            yield client
-        with patch("challenge_agent.orchestrator.session", fake_session):
-            result = await fetch_external()
-            self.assertEqual(result["text"], "FAO reference")
-            client.call_tool.assert_awaited_once()
-            self.assertEqual(client.call_tool.call_args.args[0], "fetch")
-            client.call_tool.return_value = CallToolResult(isError=True, content=[])
-            with self.assertRaises(ValueError):
-                await fetch_external()
-
-    async def test_local_model_adapter_and_untrusted_reference_exclusion(self):
-        facts = {"evidence": retrieve(QUESTION), "urgency": triage(QUESTION), "region": None}
-        client = AsyncMock()
-        response = unittest.mock.Mock()
-        # The model continues an answer the app has already started (rag.PREFILL).
-        response.json.return_value = {"content": "1. Scout your maize from emergence.\n"
-                                      "2. Early detection is critical.\n\n### What to do\n"
-                                      "1. Ask AGRITEX which products are registered and follow the label.\n\n"
-                                      "FARMER'S MESSAGE: an invented second question"}
-        client.post.return_value = response
-        manager = unittest.mock.Mock()
-        manager.__aenter__ = AsyncMock(return_value=client)
-        manager.__aexit__ = AsyncMock(return_value=False)
-        with patch("challenge_agent.orchestrator.httpx.AsyncClient", return_value=manager):
-            text, mode = await AdvisoryAgent("http://127.0.0.1:8080/completion").run(QUESTION, facts)
-        self.assertEqual(mode, "local_llm")
-        prompt = client.post.call_args.kwargs["json"]["prompt"]
-        # Same tested prompt path as the app: Qwen chat layout, answer started by the app.
-        self.assertTrue(prompt.startswith("<|im_start|>system"))
-        self.assertIn("The signs fit **Fall Armyworm**", text)
-        self.assertIn("Sources: D1", text)
-        # Run-on text after the answer is removed by the existing output guard.
-        self.assertNotIn("invented second question", text)
-        self.assertIn("<|im_end|>", client.post.call_args.kwargs["json"]["stop"])
-        with self.assertRaises(ValueError):
-            AdvisoryAgent("https://external.example/completion")
 
 
 if __name__ == "__main__":

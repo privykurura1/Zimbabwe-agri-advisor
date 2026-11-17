@@ -1,7 +1,9 @@
 """Officer feedback, and getting it back to the Murimi Fara team without internet.
 
 Three pieces:
-  * record():      what was wrong with a draft (category), the officer's corrected
+  * record():      what was wrong with a draft (category), the RIGHT farm book entry
+                   when the draft picked the wrong one (this is what trains Murimi
+                   Fara's model - tools/train_model.py), the officer's corrected
                    answer and any missing topic - saved with the decision and
                    recorded in the tamper-evident audit log.
   * export_file(): one anonymised JSON file of all reviews on this laptop, to carry
@@ -11,7 +13,7 @@ Three pieces:
 
 What leaves the laptop: the question and draft text (with phone numbers and
 ID-like numbers removed), knowledge entry IDs, the decision, category, reason,
-correction and missing topic. NOT included: officer names, farmer names typed into
+the correct entry, correction and missing topic. NOT included: officer names, farmer names typed into
 separate fields (there are none), or anything from farm records.
 """
 from datetime import datetime, timezone
@@ -65,6 +67,9 @@ def scrub(text):
 def _ensure(store):
     with store.connect() as db:
         db.executescript(SCHEMA)
+        # Added in version 2.0: older databases get the column on first use.
+        if "correct_entry" not in {r[1] for r in db.execute("PRAGMA table_info(feedback)")}:
+            db.execute("ALTER TABLE feedback ADD COLUMN correct_entry TEXT NOT NULL DEFAULT ''")
 
 
 def installation_id(store):
@@ -81,10 +86,13 @@ def installation_id(store):
         return code
 
 
-def record(store, advisory_id, category, correction="", missing=""):
+def record(store, advisory_id, category, correction="", missing="", correct_entry=""):
     category = (category or "NONE").upper()
     if category not in CATEGORIES:
         raise ValueError("Unknown problem category")
+    correct_entry = (correct_entry or "").strip().upper()
+    if correct_entry and not _ENTRY.match(correct_entry):
+        raise ValueError("Correct entry must be a farm book entry ID such as B3")
     correction = " ".join((correction or "").split())[:2000]
     missing = " ".join((missing or "").split())[:300]
     _ensure(store)
@@ -93,12 +101,13 @@ def record(store, advisory_id, category, correction="", missing=""):
             raise ValueError("Unknown advisory")
         if db.execute("SELECT 1 FROM feedback WHERE advisory_id=?", (advisory_id,)).fetchone():
             raise ValueError("Feedback already recorded for this advisory")
-        db.execute("INSERT INTO feedback VALUES (?,?,?,?,?)",
-                   (advisory_id, category, correction, missing, datetime.now(timezone.utc).isoformat()))
+        db.execute("INSERT INTO feedback (advisory_id, category, correction, missing, created, correct_entry) "
+                   "VALUES (?,?,?,?,?,?)",
+                   (advisory_id, category, correction, missing, datetime.now(timezone.utc).isoformat(), correct_entry))
         store._audit(db, "feedback_recorded", "officer",
                      {"id": advisory_id, "category": category,
                       "correction_sha256": hashlib.sha256(correction.encode()).hexdigest(),
-                      "missing": bool(missing)})
+                      "missing": bool(missing), "correct_entry": correct_entry})
 
 
 def set_purpose(store, advisory_id, purpose):
@@ -167,6 +176,7 @@ def export_file(store, district="", app_version=""):
             "reason": scrub(a.get("reason") or ""),
             "correction": scrub(fb.get("correction", "")),
             "missing_topic": scrub(fb.get("missing", "")),
+            "correct_entry": fb.get("correct_entry", ""),
             "question": scrub(doc.get("query", "")),
             "draft": scrub(doc.get("text", "")),
             "entries": entry_ids(doc),

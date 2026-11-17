@@ -1,15 +1,16 @@
-"""Read-only adapter to the existing Murimi Fara retrieval and safety gates."""
+"""Read-only adapter to Murimi Fara's answer pipeline (advisor.py): the same
+farm book search, trained model and safety checks the farmer's app uses."""
 from functools import lru_cache
-from pathlib import Path
 import re
+from pathlib import Path
 import sys
 
-from rag import (build_index, chunk_id, fallback_answer, load_chunks,
-                 retrieve_grounded, scope_guard)
+from advisor import Advisor, default_model_path
+from rag import chunk_id
 
-# Folder holding corpus_livestock_crops.md, murimifara.png and data/: beside the
-# exe when packaged (PyInstaller puts this package inside _internal), else the
-# project folder.
+# Folder holding corpus_livestock_crops.md, murimifara.png, data/ and models/:
+# beside the exe when packaged (PyInstaller puts this package inside _internal),
+# else the project folder.
 ROOT = (Path(sys.executable).resolve().parent if getattr(sys, "frozen", False)
         else Path(__file__).resolve().parents[1])
 REGIONS = {"I", "II", "III", "IV", "V"}
@@ -29,32 +30,33 @@ def validate_region(region: str) -> str:
 
 
 @lru_cache(maxsize=1)
+def advisor():
+    return Advisor(str(ROOT / "corpus_livestock_crops.md"), default_model_path(str(ROOT)))
+
+
 def index():
-    chunks = load_chunks(str(ROOT / "corpus_livestock_crops.md"))
-    vectorizer, matrix = build_index(chunks)
-    return chunks, vectorizer, matrix
+    return advisor().chunks
 
 
 def retrieve(query: str) -> dict:
     query = validate_query(query)
-    guard = scope_guard(query)
-    if guard:
-        return {"grounded": False, "sources": [], "domain": "unknown",
-                "urgent": guard["urgent"], "clarification": guard["answer"], "blocked": True}
-    chunks, vectorizer, matrix = index()
-    result = retrieve_grounded(query, chunks, vectorizer, matrix)
-    return {"grounded": result["grounded"], "domain": result["answer_domain"],
-            "urgent": result["urgent"], "blocked": False,
-            "clarification": None if result["grounded"] else fallback_answer(result["domain"]),
+    found = advisor().find(query)
+    if found["kind"] == "guard":
+        return {"grounded": False, "sources": [], "domain": "unknown", "matched_by": None,
+                "urgent": found["urgent"], "clarification": found["text"], "blocked": True}
+    if found["kind"] == "need_detail":
+        return {"grounded": False, "sources": [], "domain": found["domain"], "matched_by": None,
+                "urgent": False, "clarification": found["text"], "blocked": False}
+    return {"grounded": True, "domain": found["answer_domain"], "urgent": found["urgent"], "blocked": False,
+            "clarification": None, "matched_by": found["matched_by"],
             "sources": [{"id": chunk_id(c), "title": c.splitlines()[0],
-                         "text": c, "origin": "existing/corpus_livestock_crops.md"}
-                        for c in result["chunks"]]}
+                         "text": c, "origin": "corpus_livestock_crops.md"}
+                        for c in found["chunks"]]}
 
 
 def region_context(region: str) -> dict:
     region = validate_region(region)
-    chunks, _, _ = index()
-    reference = next(c for c in chunks if chunk_id(c) == "A1")
+    reference = advisor().by_id["A1"]
     return {"region": region, "source_id": "A1", "text": reference,
             "note": "Confirm district and current rainfall with AGRITEX; this is not a weather forecast."}
 
@@ -79,7 +81,3 @@ _PLANTING_QUESTION = re.compile(
 def needs_region(query: str) -> bool:
     return bool(_PLANTING_QUESTION.search(query))
 
-
-def fetch_is_relevant(evidence: dict) -> bool:
-    """The only third-party reference is FAO's fall armyworm page."""
-    return any(s["id"] == "D1" for s in evidence.get("sources", []))

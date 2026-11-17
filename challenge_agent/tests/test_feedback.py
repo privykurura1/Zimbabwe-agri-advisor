@@ -104,6 +104,21 @@ class ReviewPageFeedbackTests(unittest.TestCase):
         self.assertEqual(data["district"], "Gutu")
         self.assertEqual(data["reviews"][0]["category"], "MISSING")
 
+    def test_test_question_is_marked_and_exported(self):
+        home = self.client.get("/").text
+        self.assertIn("A test question", home)
+        self.assertNotIn("Drafts are written by the local model", home)
+        r = self.client.post("/draft", data={"query": "my maize has ragged holes and frass in the whorl",
+                                             "purpose": "test"}, follow_redirects=False)
+        test_id = r.headers["location"].rsplit("/", 1)[-1]
+        self.assertIn("Test question.", self.client.get(f"/advisory/{test_id}").text)
+        self.assertIn("badge test", self.client.get("/").text)
+        store = Store(self.path)
+        digest = store.get(test_id)["digest"]
+        store.review(test_id, digest, "T. Moyo", True, "ok")
+        exported = json.loads(feedback.export_json(store))
+        self.assertEqual({r["id"]: r["purpose"] for r in exported["reviews"]}[test_id], "test")
+
     def test_reject_without_category_counts_as_other(self):
         form = {"digest": self.digest, "name": "T. Moyo", "decision": "reject", "reason": "no",
                 "confirmation": f"REJECT {self.digest[:8]}"}

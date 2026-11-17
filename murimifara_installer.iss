@@ -11,14 +11,12 @@
 ;    script - that Setup.exe is what you hand to a farmer/extension
 ;    officer/anyone
 ;
-; NOTE ON SIZE: since this bundles the full offline model, the
-; resulting installer will be large (roughly 1-1.5 GB, matching what's
-; already in dist\MurimiFara\) - that's expected and correct, not a
-; mistake. This is the tradeoff for genuinely zero-setup offline use:
-; everything needed is inside this one file.
+; NOTE ON SIZE: version 2.0 has no AI model inside, so the installer is
+; small (the app folder is under 50 MB before compression) - small enough to
+; download on a phone, share by WhatsApp or Bluetooth, or copy from a flash drive.
 
 #define MyAppName "Murimi Fara"
-#define MyAppVersion "1.2"
+#define MyAppVersion "2.0"
 #define MyAppPublisher "MPKCOMTECK Technologies (Private) Limited"
 #define MyAppExeName "MurimiFara.exe"
 
@@ -47,10 +45,6 @@ SetupIconFile=murimifara.ico
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-; Large files (the model) compress slowly - "fast" compression trades
-; a bigger installer file for a much quicker build while you're testing.
-; Switch to "lzma2/max" for the final version you actually distribute.
-;CompressionThreads=auto
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -60,7 +54,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 
 [Files]
 ; Pulls in EVERYTHING from your built dist\MurimiFara\ folder -
-; the exe, index.html, rag.py, corpus, vendor/, llama/, model/, all of it.
+; the exe, index.html, the farm book, vendor/, models/, data/, all of it.
 ; EDIT the Source path below if your folder is somewhere different.
 Source: "dist\MurimiFara\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 

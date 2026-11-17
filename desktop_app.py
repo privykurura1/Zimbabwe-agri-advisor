@@ -1,78 +1,35 @@
 """
-Murimi Fara - Desktop App Entry Point
+Murimi Fara - desktop app (and web server) entry point.
 
-This is what turns the project into a real one-click app: no terminal
-windows, no visible code, no bash/bat scripts for the farmer to see or
-run. Just one icon they double-click.
+    MurimiFara.exe              opens the app in its own window. While it is open,
+                                phones on this computer's Wi-Fi/hotspot can use it
+                                too, in their browser (the address is shown in the app).
+    MurimiFara.exe --server     no window: just the web app, for a shared computer
+                                or a server. Open http://<this computer>:8000.
 
-WHAT THIS DOES, IN ORDER:
-1. Silently starts llama-server in the background (the "brain")
-2. Silently starts the backend API in the background (the "translator")
-3. Waits until the backend is ACTUALLY ready to respond, instead of
-   guessing a fixed delay - this is what fixes "127.0.0.1 refused to
-   connect", which happens when the window opens before the server has
-   finished starting up
-4. Opens ONE clean window showing the app - that's the only thing the
-   farmer ever sees
-5. When they close that window, everything shuts down cleanly behind
-   the scenes
+There is no AI model to start: answers come from the farm book and Murimi
+Fara's own small model (see advisor.py), so it opens in seconds and runs on
+old, low-memory computers.
 
-If anything goes wrong during startup, it's written to
-murimifara_error.log next to the app - since --noconsole hides all
-normal output, this log file is the only way to see what happened.
+Problems are written to murimifara_error.log in %LOCALAPPDATA%\\MurimiFara,
+because the packaged app has no console.
 
-FOLDER LAYOUT THIS EXPECTS (all sitting next to this file/the built .exe):
-    index.html
-    rag.py
-    corpus_livestock_crops.md
-    faw_classifier.onnx
-    vendor/
-        react.production.min.js
-        react-dom.production.min.js
-    llama/
-        llama-server.exe
-        (all its .dll files)
-    model/
-        qwen2.5-1.5b-instruct-q4_k_m.gguf
-
-SETUP (only needed once, on YOUR machine, to build the app):
-    pip install pywebview pyinstaller
-
-BUILDING THE ACTUAL APP (produces the real one-click .exe):
-    pyinstaller --onedir --noconsole --icon=murimifara.ico --collect-all cv2 --name MurimiFara desktop_app.py
-
-    Note the added --collect-all cv2 flag: OpenCV bundles native binary
-    files that PyInstaller doesn't always detect automatically on its
-    own. This flag forces PyInstaller to include everything OpenCV
-    needs. If the packaged app crashes specifically when you try the
-    photo-upload feature (but the chat/RAG feature still works fine),
-    this is the first thing to check - rebuild with this flag if you
-    left it off.
-
-Then copy index.html, rag.py, corpus_livestock_crops.md,
-faw_classifier.onnx, vendor/, llama/, and model/ into the same folder
-PyInstaller creates (dist/MurimiFara/).
+FILES IT EXPECTS beside the exe (build_exe.ps1 copies them):
+    index.html, murimifara.png, corpus_livestock_crops.md, vendor/,
+    models/murimi_model.json, data/, audio/
 """
 
+import json
 import os
 import sys
-import subprocess
-import json
 import tempfile
 import threading
 import time
 import traceback
-import urllib.error
 import urllib.request
 
-# When built with --noconsole, there is no console attached at all, so
-# Python's stdout/stderr are literally None rather than just empty.
-# Several libraries (including uvicorn, which crashed here) call
-# .isatty() on them to decide about colored output, which fails on
-# None with "AttributeError: 'NoneType' object has no attribute
-# 'isatty'". Giving them a real (harmless, discarded) file object
-# instead of None fixes this whole class of bug, not just uvicorn's
-# specific case of it.
+# With --noconsole there is no console, so stdout/stderr are None; several
+# libraries (uvicorn) call .isatty() on them and crash. Give them a real file.
 if sys.stdout is None:
     sys.stdout = open(os.devnull, "w")
 if sys.stderr is None:
@@ -85,18 +42,14 @@ else:
 
 os.chdir(BASE_DIR)  # so every relative path used elsewhere resolves correctly
 
-LLAMA_SERVER_PATH = os.path.join(BASE_DIR, "llama", "llama-server.exe")
-MODEL_PATH = os.path.join(BASE_DIR, "model", "qwen2.5-1.5b-instruct-q4_k_m.gguf")
+PORT = 8000
 
 
 def get_data_dir():
-    """A folder this user can always write to, for logs.
-
-    The installer puts the app under Program Files, which ordinary Windows
-    users cannot write to - so the error log (previously written next to the
-    exe) would fail exactly when it was needed. Logs now go to
-    %LOCALAPPDATA%\\MurimiFara, falling back to a "data" folder beside the app,
-    then to the temp folder."""
+    """A folder this user can always write to (logs, feedback, farm records).
+    The installer puts the app under Program Files, which ordinary users cannot
+    write to, so use %LOCALAPPDATA%\\MurimiFara, then a "data" folder beside the
+    app, then the temp folder."""
     candidates = []
     local = os.environ.get("LOCALAPPDATA")
     if local:
@@ -117,65 +70,25 @@ def get_data_dir():
 
 
 DATA_DIR = get_data_dir()
-# app.py reads this to know where to keep its query log
-os.environ["MURIMIFARA_DATA_DIR"] = DATA_DIR or ""
+os.environ["MURIMIFARA_DATA_DIR"] = DATA_DIR or ""      # app.py keeps its files here
 ERROR_LOG_PATH = os.path.join(DATA_DIR or BASE_DIR, "murimifara_error.log")
+_instance_mutex = None   # held for the life of the app (single-instance check)
 
-llama_process = None
 
-
-def log_error(context, exc):
-    """Writes any startup failure to a log file next to the app. This is
-    essential because --noconsole suppresses all normal print/error
-    output - without this, a crash would be completely silent and
-    impossible to diagnose."""
-    # Logging must never be what crashes the app: if the file can't be
-    # written, carry on rather than raising from inside an error handler.
+def log_error(context, exc_info=None):
+    """Write a startup problem to the log. Must never crash the app itself."""
     try:
         with open(ERROR_LOG_PATH, "a", encoding="utf-8") as f:
-            f.write(f"\n--- {context} ---\n")
-            f.write(traceback.format_exc())
-            f.write("\n")
+            f.write(f"\n--- {time.strftime('%Y-%m-%d %H:%M:%S')} {context} ---\n")
+            if exc_info and exc_info[0]:
+                f.write("".join(traceback.format_exception(*exc_info)))
     except OSError:
         pass
 
 
-def llama_settings():
-    """Model, threads and context sized for this computer (murimi_plus.hardware),
-    falling back to the original fixed settings if that cannot run."""
-    try:
-        from murimi_plus.hardware import choose
-        args, why = choose(BASE_DIR)
-        try:
-            with open(os.path.join(DATA_DIR or BASE_DIR, "murimifara_hardware.txt"), "w", encoding="utf-8") as f:
-                f.write(why + "\n")
-        except OSError:
-            pass
-        return args
-    except Exception:
-        return ["-m", MODEL_PATH, "-t", "4", "-c", "4096"]
-
-
-_instance_mutex = None   # held for the life of the app (single-instance check)
-
-
-def llama_already_running():
-    """True if a llama-server is already answering on port 8080 - for example
-    one left behind when the app was closed by force. Reusing it avoids a
-    second copy failing to start on the same port."""
-    try:
-        urllib.request.urlopen("http://127.0.0.1:8080/health", timeout=1.5)
-        return True
-    except urllib.error.HTTPError:
-        return True          # 503 = it is there, still loading the model
-    except Exception:
-        return False
-
-
 def already_open():
-    """Windows: True if another copy of Murimi Fara is already running.
-    Two copies fight over the same ports; when the first one is closed, the
-    second one's page loses its advisor ("Couldn't reach the advisor")."""
+    """Windows: True if another copy of Murimi Fara is already running (two
+    copies fight over the same port)."""
     if sys.platform != "win32":
         return False
     try:
@@ -191,140 +104,56 @@ def tell_already_open():
     try:
         import ctypes
         ctypes.windll.user32.MessageBoxW(
-            None, "Murimi Fara is already open.\n\nLook for its window on the taskbar.",
-            "Murimi Fara", 0x40)
+            None, "Murimi Fara is already open.\n\nLook for its window on the taskbar.", "Murimi Fara", 0x40)
     except Exception:
         pass
 
 
-def start_llama_server():
-    """Starts the model server completely hidden - no console window
-    pops up, unlike when we ran this manually from a terminal before."""
-    global llama_process
-    if llama_already_running():
-        return
-    creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
-    llama_process = subprocess.Popen(
-        [LLAMA_SERVER_PATH, *llama_settings(), "--port", "8080"],
-        creationflags=creationflags,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-
-
 def start_backend():
-    """Starts the API server in the background, inside this same
-    program - no separate uvicorn command, no separate window. Any
-    startup failure (missing file, import error, etc.) gets written to
-    the error log instead of vanishing silently.
-
-    Retries a few times on "port already in use" specifically - this
-    happens intermittently when a previous run's process hasn't fully
-    released the port yet (Windows can hold a just-closed socket in a
-    "cooling down" state for a few seconds), especially if the app was
-    closed and reopened quickly. Most of the time this clears up within
-    a few seconds on its own.
-    """
+    """Run the web server inside this program. Listens on every network
+    interface (0.0.0.0) so phones on the same Wi-Fi can reach it. Retries while
+    Windows is still releasing the port from a run that just closed."""
     try:
         import uvicorn
-        import app  # your existing app.py, unchanged
+        import app
     except BaseException:
-        # Catches any failure while app.py itself loads (missing file,
-        # corpus/model loading error, etc.) - this must stay wrapped in
-        # its own try/except, separate from the retry loop below, or a
-        # failure here would crash the thread with nothing to catch it.
-        log_error("Backend failed to import required modules", sys.exc_info())
+        log_error("Backend failed to load", sys.exc_info())
         return
-
-    max_attempts = 5
-    for attempt in range(1, max_attempts + 1):
+    for attempt in range(1, 6):
         try:
-            # 0.0.0.0 means "listen on every network interface", not just
-            # this laptop itself - this is what lets other devices (a
-            # farmer's phone, connected to the same WiFi/hotspot)
-            # actually reach this backend. 127.0.0.1 alone would only
-            # ever work from this laptop.
-            uvicorn.run(app.app, host="0.0.0.0", port=8000, log_level="warning", log_config=None)
-            return  # uvicorn.run only returns on a clean shutdown
+            uvicorn.run(app.app, host="0.0.0.0", port=PORT, log_level="warning", log_config=None)
+            return
         except SystemExit:
-            if attempt < max_attempts:
-                log_error(f"Backend startup attempt {attempt} failed (likely port still releasing), retrying...", sys.exc_info())
-                time.sleep(3)
-            else:
-                log_error("Backend failed to start after all retry attempts", sys.exc_info())
-                return
+            log_error(f"Backend start attempt {attempt} failed (port busy?)", sys.exc_info())
+            time.sleep(3)
         except BaseException:
-            # Any other failure (not the specific port-retry case above)
-            # gets logged immediately, same as before.
             log_error("Backend failed to start", sys.exc_info())
             return
 
 
-def wait_for_backend(timeout_seconds=90):
-    """Repeatedly checks whether the backend is actually ready to answer
-    requests, instead of guessing a fixed delay. Returns True once ready,
-    False if it never came up in time.
-
-    Timeout raised from 40 to 90 seconds - antivirus software commonly
-    scans newly-launched executables (especially ones bundling many
-    native binaries, like this app does with OpenCV and llama.cpp) on
-    first run, which can legitimately add real delay that isn't a bug,
-    just a slow-but-working startup. A longer wait that eventually
-    succeeds is far better than a short one that falsely reports failure.
-
-    Also logs every failed attempt's actual error - previously a timeout
-    here just logged "NoneType: None" with no useful information. Now,
-    if this ever times out again, the log will show exactly what was
-    happening on each attempt (connection refused? timed out? something
-    else?) instead of nothing at all.
-    """
-    start = time.time()
-    last_error = None
-    attempts = 0
+def wait_for_backend(timeout_seconds=60):
+    start, last_error = time.time(), None
     while time.time() - start < timeout_seconds:
-        attempts += 1
         try:
-            urllib.request.urlopen("http://127.0.0.1:8000/api/health", timeout=2)
+            urllib.request.urlopen(f"http://127.0.0.1:{PORT}/api/health", timeout=2)
             return True
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             last_error = e
-            time.sleep(0.5)
-
-    log_error(
-        f"Backend did not become ready after {timeout_seconds}s "
-        f"({attempts} attempts). Last error: {last_error!r}. "
-        f"llama_process still running: {llama_process.poll() is None if llama_process else 'N/A'}",
-        None,
-    )
+            time.sleep(0.3)
+    log_error(f"Backend did not become ready after {timeout_seconds}s. Last error: {last_error!r}")
     return False
 
 
-def run_mcp_server():
-    """The packaged app has no python.exe, so the officer-review agent starts its
-    MCP tool server by running this same exe with --mcp-server. It talks over
-    stdin/stdout only and never opens a window or starts the model."""
-    # A windowed exe may start with sys.stdin/stdout set to None even though the
-    # parent passed pipes; reopen them from the inherited file descriptors.
-    if sys.stdin is None:
-        sys.stdin = open(0, "r", encoding="utf-8", closefd=False)
-    if sys.stdout is None:
-        sys.stdout = open(1, "w", encoding="utf-8", closefd=False)
-    if sys.stderr is None:
-        sys.stderr = open(os.devnull, "w", encoding="utf-8")
-    # Started by another MCP client (not by our own officer page): keep the
-    # agent's audit log in the app's data folder, not the read-only install folder.
-    os.environ.setdefault("MURIMI_AGENT_DB", os.path.join(DATA_DIR or BASE_DIR, "officer_review.sqlite3"))
-    from challenge_agent.server import mcp
-    mcp.run(transport="stdio")
-
-
-def run_mcp_selftest():
-    """Used by build_exe.ps1 after building: drafts one advisory through the real
-    MCP server (started as `MurimiFara.exe --mcp-server`) into a throwaway database
-    and writes OK or the error to murimifara_selftest.txt."""
+def run_officer_selftest():
+    """Used by build_exe.ps1 after building: answers one question and drafts one
+    officer advisory, and writes OK or the error to murimifara_selftest.txt."""
     import asyncio
     result_path = os.path.join(DATA_DIR or BASE_DIR, "murimifara_selftest.txt")
     try:
+        from advisor import Advisor, default_model_path
+        found = Advisor("corpus_livestock_crops.md", default_model_path(BASE_DIR)).ask("Mombe yangu iri kuita weti tsvuku")
+        if "B3" not in found["entries"]:
+            raise RuntimeError("farm book answer check failed: " + json.dumps(found["entries"]))
         from challenge_agent.orchestrator import draft
         db = os.path.join(tempfile.mkdtemp(), "selftest.sqlite3")
         result = asyncio.run(draft("my maize has ragged holes and frass in the whorl", db))
@@ -336,52 +165,30 @@ def run_mcp_selftest():
 
 
 def main():
-    if "--mcp-server" in sys.argv:
-        run_mcp_server()
-        return
-    if "--mcp-selftest" in sys.argv:
-        run_mcp_selftest()
+    if "--officer-selftest" in sys.argv:
+        run_officer_selftest()
         return
     if already_open():
         tell_already_open()
         return
+    if "--server" in sys.argv:
+        start_backend()            # runs until the process is stopped
+        return
     try:
-        start_llama_server()
-
-        backend_thread = threading.Thread(target=start_backend, daemon=True)
-        backend_thread.start()
-
-        backend_ready = wait_for_backend()
-
+        threading.Thread(target=start_backend, daemon=True).start()
+        ready = wait_for_backend()
         import webview
-        if backend_ready:
-            webview.create_window(
-                "Murimi Fara - Offline Farm Advisor",
-                "http://127.0.0.1:8000/",
-                width=900,
-                height=720,
-                min_size=(500, 500),
-            )
+        if ready:
+            webview.create_window("Murimi Fara - Offline Farm Advisor", f"http://127.0.0.1:{PORT}/",
+                                  width=900, height=720, min_size=(500, 500))
         else:
-            # wait_for_backend() already logged detailed diagnostics
-            # (attempt count, last error, whether llama_process is still
-            # alive) - no need to log the same failure twice here.
-            webview.create_window(
-                "Murimi Fara - Startup Error",
-                html="<h2>Something went wrong starting the advisor.</h2>"
-                     "<p>Check murimifara_error.log in the app folder.</p>",
-                width=500,
-                height=300,
-            )
-
+            webview.create_window("Murimi Fara - Startup Error",
+                                  html="<h2>Something went wrong starting Murimi Fara.</h2>"
+                                       f"<p>Please send this file to the Murimi Fara team:<br>{ERROR_LOG_PATH}</p>",
+                                  width=520, height=300)
         webview.start()
-
     except Exception:
         log_error("Fatal error in main()", sys.exc_info())
-
-    finally:
-        if llama_process:
-            llama_process.terminate()
 
 
 if __name__ == "__main__":

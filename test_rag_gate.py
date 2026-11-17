@@ -1,6 +1,6 @@
 """
 Regression test for the retrieval gate in rag.py - runs in a second, needs no
-model, no llama-server, no internet.
+AI model and no internet.
 
     python test_rag_gate.py
 
@@ -12,9 +12,8 @@ ADD YOUR OWN CASES to the CASES list every time you find a wrong answer in daily
 testing - that turns a one-off bug into a permanent check. Cases 1-5 come from
 the 28 Sept 2026 test report.
 
-Honest limits: this checks retrieval and routing only. It cannot tell you
-whether the language model then words the answer well - test that by running
-the real app.
+Honest limits: this checks the farm book search on its own. test_core.py runs
+the same cases through the whole app (search + Murimi Fara's own model).
 """
 import os
 import sys

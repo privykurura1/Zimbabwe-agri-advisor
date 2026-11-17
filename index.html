@@ -527,22 +527,14 @@
   textarea:focus { outline: none; }
   textarea::placeholder { color: var(--ink-3); }
 
-  .photo-btn {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    height: 2.6rem;
-    padding: 0 0.8rem;
-    border-radius: 0.7rem;
-    border: 1px solid var(--rule);
-    background: #f4f7f2;
-    color: var(--ink);
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-  .photo-btn:hover { border-color: var(--leaf); }
-  .photo-btn svg { width: 1.15rem; height: 1.15rem; }
+  .feedback-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; padding: 0.6rem 1rem 0.8rem;
+    font-size: 0.9rem; color: var(--ink-2, #4a5a4a); border-top: 1px solid rgba(0,0,0,0.06); }
+  .feedback-row button { font: inherit; border: 1px solid #c9d3c4; background: #fff; border-radius: 999px;
+    padding: 0.3rem 0.9rem; cursor: pointer; min-height: 2.2rem; }
+  .feedback-row button:hover { border-color: var(--leaf, #3f8f3a); }
+  ul.answer-list li { padding-left: 1.3rem; }
+  ul.answer-list li::before { content: ""; width: 0.45rem; height: 0.45rem; top: 0.72rem; left: 0.25rem;
+    border: 0; background: var(--leaf); }
 
   .send-btn {
     flex-shrink: 0;
@@ -557,7 +549,7 @@
     cursor: pointer;
   }
   .send-btn:hover { background: var(--leaf-dark); }
-  .photo-btn:disabled, .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .note {
     margin: 0.5rem 0.2rem 0;
@@ -577,7 +569,6 @@
     .state .state-text { display: none; }
     .size-long { display: none; }
     .size-short { display: inline !important; }
-    .photo-btn .label { display: none; }
     .example .lang { width: auto; }
     .example { flex-direction: column; gap: 0.2rem; }
     .extrasbar .lan { display: none; }
@@ -615,30 +606,16 @@ const EXAMPLE_QUESTIONS = [
   { lang: "English", text: "My cattle are drooling and have blisters in the mouth and are lame" },
 ];
 
-// "Needs urgent attention" is decided by the backend (URGENT_CHUNK_IDS in
-// rag.py), not by searching the model's wording.
 
-const TRUNC_MARK = "[[TRUNCATED]]";
-const TRUNC_NOTE = "\n\n*(This answer was shortened. Send your question again with more detail if you need more.)*";
-
-// Cut an unfinished answer back to its last complete sentence.
-function trimIncomplete(text) {
-  let t = text.replace(/\s+$/, "");
-  t = t.replace(/(^|\n)[ \t]*(\d+\.|[-*•]|#{1,3})[ \t]*$/, "");
-  t = t.replace(/\s+$/, "");
-  if (/[.!?]["'”)\]*_]*$/.test(t)) return t;
-  const re = /[.!?]["'”)\]*_]*(?=\s|$)/g;
-  let cut = -1, m;
-  while ((m = re.exec(t)) !== null) cut = m.index + m[0].length;
-  return cut > 0 ? t.slice(0, cut) : t;
-}
-
-// **bold** -> <strong>
+// **bold** -> <strong>, *note* -> <em>
 function renderInline(text) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return h("strong", { key: i }, part.slice(2, -2));
+    }
+    if (part.length > 2 && part.startsWith("*") && part.endsWith("*")) {
+      return h("em", { key: i }, part.slice(1, -1));
     }
     return part;
   });
@@ -652,7 +629,7 @@ function sentenceCase(text) {
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
-// Model text -> headings, numbered steps and paragraphs.
+// Farm book text -> headings, numbered steps, bullet points and paragraphs.
 function renderAnswer(text) {
   const lines = text.split("\n");
   const blocks = [];
@@ -671,9 +648,12 @@ function renderAnswer(text) {
       return;
     }
     const numberedMatch = line.match(/^(\d+)\.\s+(.*)/);
-    if (numberedMatch) {
-      if (!currentList) currentList = { type: "list", items: [], key: i };
-      currentList.items.push(numberedMatch[2]);
+    const bulletMatch = line.match(/^[-*•]\s+(.*)/);
+    if (numberedMatch || bulletMatch) {
+      const kind = numberedMatch ? "list" : "bullets";
+      if (currentList && currentList.type !== kind) flushList();
+      if (!currentList) currentList = { type: kind, items: [], key: i };
+      currentList.items.push(numberedMatch ? numberedMatch[2] : bulletMatch[1]);
       return;
     }
     flushList();
@@ -685,9 +665,9 @@ function renderAnswer(text) {
     if (block.type === "heading") {
       return h("div", { className: "answer-heading", key: block.key }, sentenceCase(block.text));
     }
-    if (block.type === "list") {
+    if (block.type === "list" || block.type === "bullets") {
       return h(
-        "ol",
+        block.type === "list" ? "ol" : "ul",
         { className: "answer-list", key: block.key },
         block.items.map((item, idx) => h("li", { key: idx }, renderInline(item)))
       );
@@ -711,14 +691,6 @@ function groupEntries(list) {
   return groups;
 }
 
-function CameraIcon() {
-  return h(
-    "svg",
-    { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true },
-    h("path", { d: "M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" }),
-    h("circle", { cx: 12, cy: 13, r: 3.5 })
-  );
-}
 
 function AlertIcon() {
   return h(
@@ -791,12 +763,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [backendOnline, setBackendOnline] = useState(null);
   const [lanAddress, setLanAddress] = useState(null);
-  const [imageLoading, setImageLoading] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const [bigText, setBigText] = useState(readBigText);
   const [province, setProvince] = useState(readProvince);
   const mainRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("big-text", bigText);
@@ -807,28 +777,54 @@ function App() {
     try { localStorage.setItem("mf-province", province); } catch (e) {}
   }, [province]);
 
+  // Check every few seconds until the advisor answers, then every 30 seconds.
   useEffect(() => {
-    fetch(`${API_URL}/api/health`)
-      .then((r) => r.json())
-      .then((data) => {
-        setBackendOnline(true);
-        if (data.lan_address) setLanAddress(data.lan_address);
-      })
-      .catch(() => setBackendOnline(false));
+    let stopped = false;
+    let timer = null;
+    const check = () => {
+      fetch(`${API_URL}/api/health`, { cache: "no-store" })
+        .then((r) => r.json())
+        .then((data) => {
+          if (stopped) return;
+          setBackendOnline(true);
+          if (data.lan_address) setLanAddress(data.lan_address);
+          timer = setTimeout(check, 30000);
+        })
+        .catch(() => {
+          if (stopped) return;
+          setBackendOnline(false);
+          timer = setTimeout(check, 2000);
+        });
+    };
+    check();
+    return () => { stopped = true; clearTimeout(timer); };
   }, []);
+
+  // After a failed request: wait (up to ~40 s) for the advisor to answer again.
+  async function waitForAdvisor() {
+    for (let i = 0; i < 20; i++) {
+      try {
+        const r = await fetch(`${API_URL}/api/health`, { cache: "no-store" });
+        if (r.ok) { setBackendOnline(true); return true; }
+      } catch (e) {}
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+    setBackendOnline(false);
+    return false;
+  }
 
   useEffect(() => {
     if (mainRef.current && entries.length > 0) mainRef.current.scrollTop = mainRef.current.scrollHeight;
   }, [entries, loading]);
 
-  async function submitQuestion(q) {
-    if (!q.trim() || loading) return;
+  async function submitQuestion(q, isRetry = false) {
+    if (!q.trim() || (loading && !isRetry)) return;
     setQuestion("");
     setLoading(true);
     setEntries((prev) => [
       ...prev,
       { type: "question", text: q },
-      { type: "answer", text: "", sources: [], question: q },
+      { type: "answer", text: "", sources: [], question: q, entryIds: [] },
     ]);
 
     try {
@@ -860,11 +856,13 @@ function App() {
 
           let sources = [];
           let urgent = false;
+          let entryIds = [];
           if (firstLine.startsWith("META:::")) {
             try {
               const meta = JSON.parse(firstLine.replace("META:::", ""));
               sources = meta.sources || [];
               urgent = meta.urgent === true;
+              entryIds = meta.entry_ids || [];
               if ((meta.entry_ids || []).length) {
                 extrasQuery = new URLSearchParams({ ids: meta.entry_ids.join(","), language: meta.language || "english",
                   province, domain: meta.domain || "animal", region: meta.region || "" }).toString();
@@ -876,7 +874,7 @@ function App() {
           setEntries((prev) => {
             const updated = [...prev];
             const last = updated[updated.length - 1];
-            updated[updated.length - 1] = { ...last, sources, urgent };
+            updated[updated.length - 1] = { ...last, sources, urgent, entryIds };
             return updated;
           });
         }
@@ -890,15 +888,6 @@ function App() {
           });
         }
       }
-      setEntries((prev) => {
-        const updated = [...prev];
-        const last = updated[updated.length - 1];
-        if (last && typeof last.text === "string" && last.text.includes(TRUNC_MARK)) {
-          const before = last.text.split(TRUNC_MARK)[0];
-          updated[updated.length - 1] = { ...last, text: trimIncomplete(before) + TRUNC_NOTE };
-        }
-        return updated;
-      });
       if (extrasQuery) {
         // Optional: if the extras are not installed this simply finds nothing.
         fetch(`${API_URL}/api/extras/answer?${extrasQuery}`)
@@ -912,9 +901,19 @@ function App() {
           .catch(() => {});
       }
     } catch (err) {
+      // Usually the advisor is still starting or was briefly busy: wait for it
+      // and try the question once more before showing an error.
       setEntries((prev) => [
         ...prev.slice(0, -1),
-        { type: "error", text: "Couldn't reach the advisor on this laptop. Start app.py and llama-server, then ask again." },
+        ...(isRetry ? [] : [{ type: "error", text: "The advisor is starting up. Please wait, trying again..." }]),
+      ]);
+      if (!isRetry && (await waitForAdvisor())) {
+        setEntries((prev) => prev.filter((e, i) => !(i === prev.length - 1 && e.type === "error")).slice(0, -1));
+        return submitQuestion(q, true);
+      }
+      setEntries((prev) => [
+        ...prev.filter((e, i) => !(i === prev.length - 1 && e.type === "error")),
+        { type: "error", text: "The advisor is not responding. Close Murimi Fara completely (check the taskbar) and open it again." },
       ]);
     } finally {
       setLoading(false);
@@ -925,62 +924,20 @@ function App() {
     e.preventDefault();
     submitQuestion(question);
   }
-
-  async function handlePhotoUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setImageLoading(true);
-    const previewUrl = URL.createObjectURL(file);
-    setEntries((prev) => [
-      ...prev,
-      { type: "question", text: "Check this crop photo", imagePreview: previewUrl },
-      { type: "answer", text: "", sources: [] },
-    ]);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch(`${API_URL}/api/classify_image`, { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-
-      // Agentic pipeline: perception -> decision -> retrieval -> advice.
-      const v = data.vision;
-      const confidenceLine = `### VISION RESULT\n${v.prediction === "damaged" ? "Fall Armyworm damage detected" : "Leaf appears healthy"} — ${v.confidence}% confidence`;
-
-      let bodyText = "";
-      if (data.decision_path === "high_confidence_damaged") bodyText = `### GROUNDED DIAGNOSIS\n${data.advice}`;
-      else if (data.decision_path === "high_confidence_healthy") bodyText = `### RESULT\n${data.advice}`;
-      else if (data.decision_path === "medium_confidence") bodyText = `### NEEDS A CLEARER PHOTO\n${data.advice}`;
-      else bodyText = `### UNCERTAIN RESULT\n${data.advice}`;
-
-      const resultText = `${confidenceLine}\n\n${bodyText}`;
-
-      setEntries((prev) => {
-        const updated = [...prev];
-        updated[updated.length - 1] = {
-          ...updated[updated.length - 1],
-          text: resultText,
-          sources: data.sources && data.sources.length > 0
-            ? data.sources
-            : ["Photo analysis (offline, on-device, OpenCV 5)"],
-        };
-        return updated;
-      });
-    } catch (err) {
-      setEntries((prev) => [
-        ...prev.slice(0, -1),
-        { type: "error", text: "Couldn't check the photo. Make sure the vision model is set up, then try again." },
-      ]);
-    } finally {
-      setImageLoading(false);
-      e.target.value = "";
-    }
+  // "Was this right?" - saved on this computer; officers review the "not right"
+  // ones and say which farm book entry was right. That is how Murimi Fara learns.
+  function sendFeedback(index, helpful) {
+    const entry = entries[index];
+    if (!entry || entry.feedback) return;
+    setEntries((prev) => prev.map((e, i) => (i === index ? { ...e, feedback: helpful ? "yes" : "no" } : e)));
+    fetch(`${API_URL}/api/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: entry.question || "", entry_ids: entry.entryIds || [], helpful }),
+    }).catch(() => {});
   }
 
-  const openCamera = () => fileInputRef.current && fileInputRef.current.click();
+
 
   const logoImg = (cls) =>
     logoFailed
@@ -990,8 +947,8 @@ function App() {
   const stateClass = backendOnline === null ? "checking" : backendOnline === false ? "down" : "";
   const stateText =
     backendOnline === null ? "Starting up" :
-    backendOnline === false ? "Advisor not running" :
-    "On this laptop, offline";
+    backendOnline === false ? "Not connected" :
+    ON_THIS_LAPTOP ? "On this computer, offline" : "Connected";
 
   const topbar = h(
     "header",
@@ -1053,7 +1010,7 @@ function App() {
         h(
           "p",
           null,
-          "Tell Murimi Fara about a sick animal or a damaged crop in your own words. It runs on this laptop with no internet, and every answer comes from a checked library of vet and crop guidance."
+          "Tell Murimi Fara about a sick animal or a damaged crop in your own words. It works with no internet, and every answer comes from the Murimi Fara farm book of animal and crop guidance - never made up by a computer."
         )
       )
     ),
@@ -1062,8 +1019,8 @@ function App() {
       { className: "covers" },
       h("li", null, h("b", null, "Livestock"), "Cattle, goats and poultry illness"),
       h("li", null, h("b", null, "Crops"), "Pests and damage in maize and more"),
-      h("li", null, h("b", null, "Photos"), "Snap one leaf to check for armyworm"),
-      h("li", null, h("b", null, "Your language"), "English, Shona or Ndebele")
+      h("li", null, h("b", null, "Phones too"), "Open it in a phone's browser on this Wi‑Fi"),
+      h("li", null, h("b", null, "Ask your way"), "In English, Shona or Ndebele")
     ),
     h("div", { className: "examples-head" }, "Questions farmers have asked"),
     h(
@@ -1089,8 +1046,7 @@ function App() {
           return h(
             "div",
             { className: "ask", key: i },
-            h("div", { className: "ask-text" }, entry.text),
-            entry.imagePreview && h("img", { src: entry.imagePreview, alt: "Crop photo you sent" })
+            h("div", { className: "ask-text" }, entry.text)
           );
         }
         if (entry.type === "error") {
@@ -1103,7 +1059,7 @@ function App() {
           { className: "reply", key: i },
           h("div", { className: `avatar ${waiting ? "working" : ""}` }, logoImg("decor")),
           waiting
-            ? h("div", { className: "waiting" }, "Murimi Fara is checking the library…")
+            ? h("div", { className: "waiting" }, "Murimi Fara is checking the farm book…")
             : h(
                 "div",
                 { className: `panel ${urgent ? "urgent" : ""}` },
@@ -1124,16 +1080,26 @@ function App() {
                   h(
                     "div",
                     { className: "grounding" },
-                    h("p", null, "Based on these guides"),
+                    h("p", null, "From the Murimi Fara farm book"),
                     h("ul", null, entry.sources.map((s, j) => h("li", { key: j }, s)))
                   ),
                 h(ExtrasBox, { extras: entry.extras }),
+                entry.text && entry.question && !(loading && gi === groupEntries(entries).length - 1) && h(
+                  "div",
+                  { className: "feedback-row" },
+                  entry.feedback
+                    ? h("span", null, entry.feedback === "yes" ? "Thank you!" :
+                        "Thank you. An officer will check this question so Murimi Fara can learn.")
+                    : [h("span", { key: "q" }, "Was this answer right?"),
+                       h("button", { key: "y", type: "button", onClick: () => sendFeedback(entries.indexOf(entry), true) }, "Yes, helpful"),
+                       h("button", { key: "n", type: "button", onClick: () => sendFeedback(entries.indexOf(entry), false) }, "Not right")]
+                ),
                 ON_THIS_LAPTOP && entry.question && entry.text && !loading && h(
                   "div",
                   { className: "officer-row" },
                   h("a", { className: "officer-link", href: `/officer/?q=${encodeURIComponent(entry.question)}` },
                     "Send to an officer for review"),
-                  h("span", null, "The officer checks the agent's draft before anything goes to the farmer.")
+                  h("span", null, "An officer checks the farm book answer before advice goes to the farmer.")
                 )
               )
         );
@@ -1163,23 +1129,9 @@ function App() {
             }
           },
         }),
-        h(
-          "button",
-          { type: "button", className: "photo-btn", disabled: imageLoading, onClick: openCamera, "aria-label": "Check a crop photo" },
-          h(CameraIcon),
-          h("span", { className: "label" }, imageLoading ? "Checking…" : "Photo")
-        ),
-        h("input", {
-          ref: fileInputRef,
-          type: "file",
-          accept: "image/*",
-          capture: "environment",
-          style: { display: "none" },
-          onChange: handlePhotoUpload,
-        }),
         h("button", { type: "submit", className: "send-btn", disabled: loading }, loading ? "Asking…" : "Ask")
       ),
-      h("p", { className: "note" }, "For photos, get close to one leaf. Questions are saved only on this laptop to help improve the advisor.")
+      h("p", { className: "note" }, "Questions are saved only on this computer, to help improve Murimi Fara.")
     )
   );
 

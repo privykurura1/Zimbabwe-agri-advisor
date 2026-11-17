@@ -2,7 +2,7 @@
 
 All of this is in `murimi_plus/`. app.py loads it only if it imports cleanly, so a
 fault in the extras can never stop the advisor from answering. Nothing in the extras
-asks the language model to write anything. Everything a farmer sees here was written
+needs an AI model. Everything a farmer sees here was written
 or checked by a person.
 
 ## What was added, and its status
@@ -17,8 +17,6 @@ or checked by a person.
 | Seasonal outlook in planting answers | `data/seasonal_outlook.json` | Works. **Blank** until you copy in the official outlook. It only shows when the farmer names a region ("region 4"). |
 | Farm records and reminders | `/extras/farm` | Works. The only built-in suggestion is weekly dipping, from knowledge entry B5. |
 | SMS of approved advice | `python -m murimi_plus.sms send ...` | Tested only against a simulated gateway; **not yet with a real phone and SIM**. |
-| More photo checks | `/extras/photo`, `models/photo/`, `tools/train_photo_check.py` | Framework tested with a tiny test model. **No new trained checks are included**: they need labelled photos. The training script was **not run here** because PyTorch is not available in this environment. |
-| Low-end hardware mode | `murimi_plus/hardware.py`, used by `desktop_app.py` | Works. It uses fewer threads and a smaller context on computers with less than 6 GB RAM, plus an optional `model/lite.gguf`. |
 | Expert review sheet | `tools/export_review_sheet.py` → `review/expert_review_sheet.csv` | Ready to send. |
 | Pilot plan + metrics | `docs/PILOT_PLAN.md`, `tools/pilot_metrics.py` | Ready. |
 | Partnership letter | `docs/PARTNERSHIP_LETTER.md` | Template to fill in. |

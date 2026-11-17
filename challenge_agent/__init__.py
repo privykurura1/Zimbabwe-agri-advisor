@@ -1,1 +1,1 @@
-"""New African Agentic AI Design Challenge development; legacy app is unchanged."""
+"""Challenge-only tests; no changes to existing regression scripts."""

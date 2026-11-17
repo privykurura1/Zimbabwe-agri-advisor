@@ -181,19 +181,6 @@ details.mf-card+details.mf-card{margin-top:.6rem}
 .mf-empty h3{margin:0 0 .3rem;font-family:var(--display)}
 .mf-empty p{margin:0 auto;color:var(--ink-2);max-width:30rem}
 
-/* photo */
-.mf-drop{display:flex;flex-direction:column;align-items:center;gap:.4rem;text-align:center;border:2px dashed #c3cfbd;
- border-radius:var(--radius);padding:1.6rem 1rem;background:#fafbf8;cursor:pointer;color:var(--ink-2)}
-.mf-drop:hover{border-color:var(--leaf);background:var(--leaf-wash)}
-.mf-drop .ic{color:var(--leaf)}
-.mf-drop input{max-width:18rem;border:0;background:none;min-height:auto;padding:.3rem;font-size:.85rem}
-.mf-result{overflow:hidden}
-.mf-result-head{display:flex;gap:.7rem;align-items:center;padding:1rem 1.1rem;font-weight:600}
-.mf-result-head.problem{background:var(--danger-wash);color:var(--danger)}
-.mf-result-head.no_problem_seen{background:var(--leaf-wash);color:var(--leaf-dark)}
-.mf-result-head.unsure{background:var(--harvest-wash);color:#8a5e0a}
-.mf-meter{height:.6rem;background:#eef1ea;border-radius:999px;overflow:hidden;margin:.35rem 0 .2rem}
-.mf-meter i{display:block;height:100%;background:var(--leaf)}
 
 @media (max-width:700px){
  .mf-grid{grid-template-columns:1fr}
@@ -212,7 +199,7 @@ _MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
 
 TABS = [("/", "Advisor", "chat"), ("/extras/dashboard", "Outbreak watch", "pulse"),
         ("/extras/farm", "Farm records", "book"), ("/extras/help", "Find help", "phone"),
-        ("/extras/photo", "Photo checks", "camera"), ("/officer/", "Officer review", "check")]
+        ("/officer/", "Officer review", "check")]
 
 
 def shell(title, lead, icon_name, current, body):
@@ -394,39 +381,3 @@ def farm_page(reminders, records, suggested, today, error=""):
     return shell("Farm records", "Reminders and a simple diary for your animals and fields.", "book", "/extras/farm", body)
 
 
-# ---------------------------------------------------------------- photo checks
-def photo_none():
-    return shell("Photo checks", "Extra photo checks for crop and animal problems.", "camera", "/extras/photo",
-                 empty("camera", "No extra photo checks are switched on yet",
-                       "The maize armyworm check is on the main Advisor page. New checks are added in models/photo/ "
-                       "only after they have been tested on real farm photos."))
-
-
-def photo_form(checks):
-    opts = "".join(f"<option value='{esc(n)}'>{esc(c['config'].get('title', n))}</option>" for n, c in checks.items())
-    body = (f"<form class='mf-card mf-pad mf-form' method='post' action='/extras/photo' enctype='multipart/form-data'>"
-            f"<label class='mf-field wide'><span>What to check</span><select name='name'>{opts}</select></label>"
-            f"<label class='mf-drop wide'>{icon('upload', 28)}<b>Take or choose a photo</b>"
-            f"<span class='mf-muted'>Daylight, close to one leaf, in focus</span>"
-            f"<input type='file' name='file' accept='image/*' capture='environment' required></label>"
-            f"<div class='wide'><button class='mf-btn'>{icon('camera', 16)}Check photo</button></div></form>")
-    return shell("Photo checks", "Take a photo and the app checks it for one specific problem.", "camera",
-                 "/extras/photo", body)
-
-
-_DECISION = {"problem": ("alert", "Possible problem found"), "no_problem_seen": ("check", "Problem not seen"),
-             "unsure": ("alert", "Not sure")}
-
-
-def photo_result(r, tested, entry_title):
-    ic, head = _DECISION[r["decision"]]
-    tested_html = f"<p class='mf-muted'>{esc(tested)}</p>" if tested else ""
-    more = (note("info", "What to do next:", f" ask the Advisor about {entry_title}.", "chat") if entry_title else "")
-    body = (f"<article class='mf-card mf-result'><div class='mf-result-head {r['decision']}'>{icon(ic, 20)}"
-            f"{esc(head)} - {esc(r['check'])}</div><div class='mf-pad'><p style='margin-top:0'>{esc(r['message'])}</p>"
-            f"<div class='mf-muted'>Result: {esc(r['label'])}, {r['confidence']}% sure</div>"
-            f"<div class='mf-meter'><i style='width:{max(0, min(100, r['confidence']))}%'></i></div>"
-            f"{tested_html}</div></article>{more}"
-            f"<p><a class='mf-btn ghost' href='/extras/photo'>{icon('camera', 16)}Check another photo</a></p>")
-    return shell("Photo check result", "The photo check only looks for the one problem it was trained on.",
-                 "camera", "/extras/photo", body)

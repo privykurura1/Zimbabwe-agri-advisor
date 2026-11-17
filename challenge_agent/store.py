@@ -126,7 +126,7 @@ class Store:
         return result
 
     def review(self, advisory_id, content_hash, reviewer, approve, reason):
-        # This method is used ONLY by the trusted operator CLI, never an MCP tool.
+        # This method is used ONLY by the trusted operator CLI, never by the agent.
         if not reviewer.strip() or not reason.strip() or len(reason) > 2000:
             raise ValueError("Reviewer identity and a reason (1–2000 characters) are required")
         with self.transaction() as db:

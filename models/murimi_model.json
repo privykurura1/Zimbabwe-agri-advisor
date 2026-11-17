@@ -1,0 +1,665 @@
+{
+ "format": "murimi-fara-model/1",
+ "info": {
+  "version": 2,
+  "trained_at": "2026-11-17T15:25:10+00:00",
+  "examples": 128,
+  "sources": {
+   "farm_book": 128
+  },
+  "check": {
+   "passed": 86,
+   "total": 86
+  },
+  "search_alone": {
+   "passed": 86,
+   "total": 86
+  }
+ },
+ "settings": {
+  "strong": 0.8,
+  "weak": 0.65
+ },
+ "examples": [
+  {
+   "text": "Zimbabwe's Five Natural Regions (agro-ecological zones)",
+   "entry": "A1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Theileriosis (\"January Disease\")",
+   "entry": "B1",
+   "source": "farm_book"
+  },
+  {
+   "text": "High fever, swollen lymph nodes (especially near the ear/jaw), laboured breathing, discharge from eyes/nose, loss of appetite, rapid decline",
+   "entry": "B1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Anaplasmosis (\"Gallsickness\")",
+   "entry": "B2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Fever, pale or yellowish gums/mucous membranes (anaemia, jaundice), weakness, reduced appetite, sometimes dark urine",
+   "entry": "B2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Babesiosis (\"Redwater\")",
+   "entry": "B3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Mombe iri kuita weti tsvuku",
+   "entry": "B3",
+   "source": "farm_book"
+  },
+  {
+   "text": "my cow is passing red urine",
+   "entry": "B3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Inkomo ichama umchamo obomvu",
+   "entry": "B3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Fever, red-brown/\"redwater\" urine (blood in urine), anaemia, weakness, loss of appetite",
+   "entry": "B3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Heartwater (Cowdriosis)",
+   "entry": "B4",
+   "source": "farm_book"
+  },
+  {
+   "text": "High fever, nervous signs (circling, muscle tremors, pushing head against objects, aggression or anxious behaviour), can progress rapidly to death — mortality up to 90% in susceptible animals if untreated",
+   "entry": "B4",
+   "source": "farm_book"
+  },
+  {
+   "text": "General tick control guidance (applies across B1–B4)",
+   "entry": "B5",
+   "source": "farm_book"
+  },
+  {
+   "text": "Newcastle Disease (ND)",
+   "entry": "C1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Variable, but commonly: respiratory distress (gasping, coughing), greenish watery diarrhea, drop in egg production and/or thin-shelled misshapen eggs, and in later stages nervous signs (twisted neck/head, paralysis, tremors). Sudden deaths with few warning signs are common in unvaccinated flocks",
+   "entry": "C1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Infectious Bronchitis (IB)",
+   "entry": "C2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Huku dziri kunetseka kufema",
+   "entry": "C2",
+   "source": "farm_book"
+  },
+  {
+   "text": "my chickens are having difficulty breathing",
+   "entry": "C2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Izinkukhu ezithwala nzima ukuphefumula",
+   "entry": "C2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Coughing, sneezing, nasal discharge, watery eyes, reduced egg production, and in laying birds, misshapen or poor-quality eggshells. Generally lower mortality than ND but can be severe in young chicks",
+   "entry": "C2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Coccidiosis",
+   "entry": "C3",
+   "source": "farm_book"
+  },
+  {
+   "text": "chickens with bloody diarrhea",
+   "entry": "C3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Bloody or watery diarrhea, ruffled feathers, lethargy, pale comb/wattles (anemia), reduced growth in young birds, huddling. Birds under 10-14 days old are generally not yet susceptible; risk rises as chicks start actively pecking at litter",
+   "entry": "C3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Fowl Typhoid / Pullorum Disease",
+   "entry": "C4",
+   "source": "farm_book"
+  },
+  {
+   "text": "In young chicks: diarrhea, weakness, high mortality. In adult birds (fowl typhoid specifically): depression, pale comb, reduced appetite, greenish-yellow diarrhea, sudden deaths",
+   "entry": "C4",
+   "source": "farm_book"
+  },
+  {
+   "text": "General smallholder poultry biosecurity (applies across C1–C4)",
+   "entry": "C5",
+   "source": "farm_book"
+  },
+  {
+   "text": "Gastrointestinal Parasites (Haemonchus, Eimeria)",
+   "entry": "E1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Heartwater in Goats and Sheep",
+   "entry": "E2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Peste des Petits Ruminants (PPR) — Regional Awareness",
+   "entry": "E3",
+   "source": "farm_book"
+  },
+  {
+   "text": "goat and sheep disease",
+   "entry": "E3",
+   "source": "farm_book"
+  },
+  {
+   "text": "high fever, discharge from eyes/nose, mouth sores/erosions, diarrhea, pneumonia (coughing) — sudden death is possible in young kids especially",
+   "entry": "E3",
+   "source": "farm_book"
+  },
+  {
+   "text": "General smallholder goat/sheep husbandry (applies across E1–E3)",
+   "entry": "E4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Maize — Fall Armyworm",
+   "entry": "D1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Ragged holes in leaves, \"windowpaning\" on young leaves, frass (caterpillar droppings) visible in the whorl, damaged growing point",
+   "entry": "D1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Maize/Tobacco/Groundnuts — Planting Windows by Region",
+   "entry": "D2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Tobacco — Zimbabwe context",
+   "entry": "D3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Cow passing red or brown urine",
+   "entry": "F1",
+   "source": "farm_book"
+  },
+  {
+   "text": "my cow is passing red urine",
+   "entry": "F1",
+   "source": "farm_book"
+  },
+  {
+   "text": "mombe iri kuita weti tsvuku",
+   "entry": "F1",
+   "source": "farm_book"
+  },
+  {
+   "text": "urine looks like blood",
+   "entry": "F1",
+   "source": "farm_book"
+  },
+  {
+   "text": "redwater",
+   "entry": "F1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Cow with fever plus swollen lymph nodes",
+   "entry": "F2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Animal with fever plus nervous signs",
+   "entry": "F3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Pale eyelids or gums in goat/sheep",
+   "entry": "F4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chicken with twisted neck, paralysis, green diarrhea, sudden deaths",
+   "entry": "F5",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chicken with bloody diarrhea",
+   "entry": "F6",
+   "source": "farm_book"
+  },
+  {
+   "text": "Many animals die suddenly with little warning",
+   "entry": "F7",
+   "source": "farm_book"
+  },
+  {
+   "text": "Lumpy Skin Disease (LSD)",
+   "entry": "G1",
+   "source": "farm_book"
+  },
+  {
+   "text": "fever, firm raised skin nodules/lumps, enlarged lymph nodes, swelling of limbs or brisket, eye/nose discharge, reduced milk production, weakness, and sometimes skin lesions that become damaged or infected",
+   "entry": "G1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Foot-and-Mouth Disease (FMD)",
+   "entry": "G2",
+   "source": "farm_book"
+  },
+  {
+   "text": "fever, excessive salivation/drooling, blisters or erosions in the mouth/tongue, sores around the feet/coronary band, lameness, reluctance to move, and sudden drop in milk",
+   "entry": "G2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Anthrax",
+   "entry": "G3",
+   "source": "farm_book"
+  },
+  {
+   "text": "sudden death, fever before death, bleeding/discharge from body openings, rapidly bloating carcass, and lack of normal rigor mortis can occur, but signs are not always complete",
+   "entry": "G3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Blackleg",
+   "entry": "G4",
+   "source": "farm_book"
+  },
+  {
+   "text": "sudden lameness, fever, painful swelling of large muscles, depression, and rapid death. Swellings can later feel crackly because of gas",
+   "entry": "G4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Mastitis",
+   "entry": "G5",
+   "source": "farm_book"
+  },
+  {
+   "text": "swollen, hot, painful udder quarter; abnormal milk with flakes, clots, watery appearance or blood; reduced milk; fever or weakness in severe cases",
+   "entry": "G5",
+   "source": "farm_book"
+  },
+  {
+   "text": "Bloat",
+   "entry": "G6",
+   "source": "farm_book"
+  },
+  {
+   "text": "Calf diarrhea (scours)",
+   "entry": "G7",
+   "source": "farm_book"
+  },
+  {
+   "text": "sunken eyes, dry mouth, weakness, inability to suck, cold ears/ legs, inability to stand, or blood in stool",
+   "entry": "G7",
+   "source": "farm_book"
+  },
+  {
+   "text": "Pneumonia in calves/cattle",
+   "entry": "G8",
+   "source": "farm_book"
+  },
+  {
+   "text": "coughing, rapid/laboured breathing, nasal discharge, fever, poor appetite, depression",
+   "entry": "G8",
+   "source": "farm_book"
+  },
+  {
+   "text": "Difficult birth (dystocia)",
+   "entry": "H1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Retained placenta",
+   "entry": "H2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Uterine prolapse",
+   "entry": "H3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Infectious Bursal Disease (Gumboro)",
+   "entry": "I1",
+   "source": "farm_book"
+  },
+  {
+   "text": "depression, ruffled feathers, watery diarrhea, vent pecking, trembling, dehydration, and sudden increase in mortality",
+   "entry": "I1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Fowl Pox",
+   "entry": "I2",
+   "source": "farm_book"
+  },
+  {
+   "text": "scabby lesions on comb, wattles, eyelids or unfeathered skin (\"dry\" form), or lesions in the mouth/upper respiratory tract (\"wet\" form)",
+   "entry": "I2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Heat stress in chickens",
+   "entry": "I3",
+   "source": "farm_book"
+  },
+  {
+   "text": "panting, wings held away from body, crowding near water, reduced feed intake, reduced egg production, weakness, death in severe heat",
+   "entry": "I3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Maize Streak Virus (MSV)",
+   "entry": "J1",
+   "source": "farm_book"
+  },
+  {
+   "text": "narrow pale/yellow streaks running along leaves; plants infected when young may become severely stunted and produce little grain",
+   "entry": "J1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Grey Leaf Spot (GLS)",
+   "entry": "J2",
+   "source": "farm_book"
+  },
+  {
+   "text": "long rectangular grey/tan lesions often restricted by leaf veins; lesions can merge and dry large areas of leaf",
+   "entry": "J2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Maize stalk borers",
+   "entry": "J3",
+   "source": "farm_book"
+  },
+  {
+   "text": "holes in leaves, \"dead heart\" in young plants, tunneling inside stems, weak/broken stems, frass near entry holes, poor cob development",
+   "entry": "J3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Maize nutrient deficiency vs disease",
+   "entry": "J4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Groundnut Rosette Disease",
+   "entry": "K1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Groundnut aflatoxin risk",
+   "entry": "K2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Tomato late blight",
+   "entry": "L1",
+   "source": "farm_book"
+  },
+  {
+   "text": "rapidly expanding water-soaked/dark lesions on leaves and stems; white growth may appear at lesion edges under humid conditions; fruit can develop firm brown lesions",
+   "entry": "L1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Tomato bacterial wilt",
+   "entry": "L2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Tuta absoluta (tomato leaf miner)",
+   "entry": "L3",
+   "source": "farm_book"
+  },
+  {
+   "text": "mines/blotches in leaves, galleries in stems, pinholes and tunneling in fruit; small larvae may be found within mines",
+   "entry": "L3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Aphids",
+   "entry": "L4",
+   "source": "farm_book"
+  },
+  {
+   "text": "clusters of small soft-bodied insects on tender shoots/undersides of leaves, curling/distortion, sticky honeydew, sometimes black sooty mould",
+   "entry": "L4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Whiteflies",
+   "entry": "L5",
+   "source": "farm_book"
+  },
+  {
+   "text": "tiny white insects fly from leaf undersides when disturbed; nymphs remain attached underneath leaves; honeydew and sooty mould can develop",
+   "entry": "L5",
+   "source": "farm_book"
+  },
+  {
+   "text": "Crop drought stress vs disease",
+   "entry": "M1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Waterlogging",
+   "entry": "M2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Livestock heat stress",
+   "entry": "M3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Suspected poisoning",
+   "entry": "N1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Mouldy feed",
+   "entry": "N2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chaNdira",
+   "entry": "B1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chezvikwekwe chemombe",
+   "entry": "B1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane kaJanuary",
+   "entry": "B1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane wemikhaza wezinkomo",
+   "entry": "B1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chenduru",
+   "entry": "B2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane wemikhaza wezinkomo",
+   "entry": "B2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere cheweti tsvuku",
+   "entry": "B3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane womchamo obomvu",
+   "entry": "B3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chemoyo chinokonzerwa nezvikwekwe",
+   "entry": "B4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chemoyo",
+   "entry": "B4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane wenhliziyo",
+   "entry": "B4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane wenhliziyo obangelwa yimikhaza",
+   "entry": "B4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere cheNewcastle chehuku",
+   "entry": "C1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chinouraya huku zvakawanda",
+   "entry": "C1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane weNewcastle wezinkukhu",
+   "entry": "C1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane obulala izinkukhu ezinengi",
+   "entry": "C1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chekufema chehuku",
+   "entry": "C2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane wokuphefumula wezinkukhu",
+   "entry": "C2",
+   "source": "farm_book"
+  },
+  {
+   "text": "Huku dzine manyoka ane ropa",
+   "entry": "C3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chemudumbu chehuku",
+   "entry": "C3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Izinkukhu ezihuda igazi",
+   "entry": "C3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane wamathumbu wezinkukhu",
+   "entry": "C3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Typhoid yehuku",
+   "entry": "C4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chetyphoid chehuku",
+   "entry": "C4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Typhoid yezinkukhu",
+   "entry": "C4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane weTyphoid wezinkukhu",
+   "entry": "C4",
+   "source": "farm_book"
+  },
+  {
+   "text": "Chirwere chembudzi nehwai",
+   "entry": "E3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Umkhuhlane wezimbuzi lezimvu",
+   "entry": "E3",
+   "source": "farm_book"
+  },
+  {
+   "text": "Gonye rechibage",
+   "entry": "D1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Gonye rinodya chibage",
+   "entry": "D1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Gonye rinoparadza chibage",
+   "entry": "D1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Isibungu somumbu",
+   "entry": "D1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Isibungu esidla umumbu",
+   "entry": "D1",
+   "source": "farm_book"
+  },
+  {
+   "text": "Isibungu esitshabalalisa umumbu",
+   "entry": "D1",
+   "source": "farm_book"
+  }
+ ]
+}

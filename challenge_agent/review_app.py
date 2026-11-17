@@ -1,13 +1,15 @@
 """Officer review page: the human side of the workflow, in a browser.
 
 Runs only on this computer (127.0.0.1). An extension officer can
-  1. enter a farmer's question -> the LangGraph agent drafts an advisory via MCP,
+  1. enter a farmer's question -> a draft is built from the Murimi Fara farm book,
   2. read the draft with all its evidence,
   3. approve or reject it (typed confirmation + name + reason), and
-  4. export approved advice and check the audit log.
+  4. export approved advice and check the audit log,
+  5. check the questions farmers marked "not right" in the app, and say which
+     farm book entry was right - this is what teaches Murimi Fara's model.
 
-The agent itself has no access to any of this: approval and export are not MCP
-tools, and this page is a separate, human-only interface on top of the same
+The drafting code has no access to any of this: approval and export are not among
+its tools, and this page is a separate, human-only interface on top of the same
 store the CLI uses.
 """
 from datetime import datetime
@@ -21,6 +23,7 @@ from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from . import feedback
+from .knowledge import advisor as _advisor
 from .orchestrator import ROOT, draft
 from .store import Store
 
@@ -78,7 +81,8 @@ def _page(title, body, prefix=""):
         f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
         f"<title>{escape(title)} - Murimi Fara officer review</title><style>{CSS}</style></head><body>"
         f"<header><img src='{prefix}/logo.png' alt=''><h1><a href='{prefix}/'>Murimi Fara - officer review</a></h1>"
-        f"<nav>{back}<a href='{prefix}/'>Advisories</a><a href='{prefix}/audit'>Audit log</a></nav></header>"
+        f"<nav>{back}<a href='{prefix}/'>Advisories</a><a href='{prefix}/farmer-feedback'>Farmer feedback</a>"
+        f"<a href='{prefix}/audit'>Audit log</a></nav></header>"
         f"<main>{body}</main></body></html>")
 
 
@@ -97,7 +101,7 @@ def badge(state):
     return f"<span class='badge {escape(state)}'>{escape(state)}</span>"
 
 
-def create_app(db_path, model_url=None, allow_online=False, prefix=""):
+def create_app(db_path, prefix="", farmer_feedback_path=None):
     """prefix: set to '/officer' when mounted inside the main Murimi Fara app, so links
     and redirects point to the right place. Run alone, it stays ''."""
     P = prefix.rstrip("/")
@@ -144,18 +148,15 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
             "<tr><td colspan='3' class='muted'>No advisories yet.</td></tr>"
         options = "".join(f"<option value='{r}'>{('Natural Region ' + r) if r else 'Not needed / unknown'}</option>"
                           for r in REGIONS)
-        online_box = ("<label class='check'><input type='checkbox' name='online' value='1'> Also fetch the FAO "
-                      "fall-armyworm reference (third-party Fetch MCP server, needs internet)</label>"
-                      if allow_online else "")
         msg = f"<p class='notice'>{escape(message)}</p>" if message else ""
         return page("Advisories", f"""
             {msg}
             <section class='card intro'><h2>What this page is for</h2>
-            <p>You are checking <b>Murimi Fara's AI answers</b> before any advice goes to a farmer.</p>
+            <p>You are checking <b>Murimi Fara's answers</b> before any advice goes to a farmer.</p>
             <ol>
               <li><b>Type a question.</b> Either a real farmer's question, or a <b>test question</b> you make up to see
                   how well the advisor answers (for example a disease you know well).</li>
-              <li><b>The AI writes a draft</b> from the Murimi Fara knowledge base. It may be wrong - that is what you are checking.</li>
+              <li><b>Murimi Fara picks the matching farm book entry</b> as a draft. It may pick the wrong one - that is what you are checking.</li>
               <li><b>You approve or reject it</b>, and say what was wrong. Your corrections are sent back to the
                   Murimi Fara team to improve the advice.</li>
             </ol>
@@ -171,8 +172,7 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
               <textarea id='q' name='query' required minlength='3' maxlength='2000'
                 placeholder='e.g. My maize has ragged holes and frass in the whorl'>{escape(q[:2000])}</textarea>
               <div class='row'><div><label for='r'>Farm location</label><select id='r' name='region'>{options}</select></div></div>
-              {online_box}
-              <button type='submit'>Ask the AI to draft an answer</button>
+              <button type='submit'>Draft an answer</button>
               <p class='muted'>Every draft waits for your decision.</p>
             </form></section>
             <section class='card'><h2>Send reviews to the Murimi Fara team</h2>
@@ -183,17 +183,16 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
             <table><tr><th>Question</th><th>Status</th><th>Drafted (UTC)</th></tr>{rows}</table></section>""")
 
     @app.post("/draft")
-    async def make_draft(query: str = Form(...), region: str = Form(""), online: str = Form(""),
-                         purpose: str = Form("real")):
+    async def make_draft(query: str = Form(...), region: str = Form(""), purpose: str = Form("real")):
         purpose = purpose if purpose in feedback.PURPOSES else "real"
         try:
-            result = await draft(query, db_path, region, model_url, allow_online and online == "1")
+            result = await draft(query, db_path, region)
         except Exception as exc:
-            return page("Draft failed", f"<p class='warn'>The agent could not draft this: {escape(str(exc))}</p>"
+            return page("Draft failed", f"<p class='warn'>Murimi Fara could not draft this: {escape(str(exc))}</p>"
                                         f"<p><a href='{P}/'>Back</a></p>")
         if result.get("state") == "needs_information":
             return page("More information needed",
-                        f"<section class='card'><h2>The agent needs more information</h2>"
+                        f"<section class='card'><h2>Murimi Fara needs more information</h2>"
                         f"<p class='muted'>Question: {escape(query)}</p>"
                         f"<div class='draft'>{escape(result['message'])}</div>"
                         f"<p class='muted'>No draft was stored. Ask the farmer, then submit a new question.</p>"
@@ -209,6 +208,9 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
             raise HTTPException(404, str(exc))
         doc, state, code = advisory["document"], advisory["state"], advisory["digest"][:8]
         cat_options = "".join(f"<option value='{k}'>{escape(v)}</option>" for k, v in feedback.CATEGORIES.items())
+        entry_options = "<option value=''>The draft's entry is right / not sure</option>" + "".join(
+            f"<option value='{escape(i)}'>{escape(i)} - {escape(_advisor().by_id[i].splitlines()[0].split('. ', 1)[-1][:70])}</option>"
+            for i in _advisor().by_id if i and i[0] != "A")
         sources = "".join(f"<details><summary>{escape(s['title'].lstrip('# '))}</summary>"
                           f"<div class='draft'>{escape(s['text'])}</div></details>" for s in doc.get("sources", []))
         extra = ""
@@ -230,6 +232,9 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
                 <label for='why'>Reason</label><input type='text' id='why' name='reason' required maxlength='2000'
                   placeholder='e.g. Matches field inspection; advice checked against AGRITEX guidance'>
                 <label for='cat'>What was wrong with the draft?</label><select id='cat' name='category'>{cat_options}</select>
+                <label for='right'>If the draft is about the WRONG problem: which farm book entry is right?
+                  <span class='muted'>(this teaches Murimi Fara's model)</span></label>
+                <select id='right' name='correct_entry'>{entry_options}</select>
                 <label for='fix'>Your corrected answer <span class='muted'>(optional - what you would tell the farmer)</span></label>
                 <textarea id='fix' name='correction' maxlength='2000'></textarea>
                 <label for='miss'>Topic missing from Murimi Fara <span class='muted'>(optional, e.g. "goat foot rot")</span></label>
@@ -254,6 +259,7 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
             fb_html = ""
             if fb:
                 fb_html = (f"<p><b>Problem:</b> {escape(feedback.CATEGORIES.get(fb['category'], fb['category']))}</p>"
+                           + (f"<p><b>Right farm book entry:</b> {escape(fb['correct_entry'])}</p>" if fb.get("correct_entry") else "")
                            + (f"<p><b>Corrected answer:</b> {escape(fb['correction'])}</p>" if fb["correction"] else "")
                            + (f"<p><b>Missing topic:</b> {escape(fb['missing'])}</p>" if fb["missing"] else ""))
             number = _team_number()
@@ -274,7 +280,7 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
         return page("Advisory", f"""
             {msg}<section class='card'><h2>{'Test question' if kind == 'test' else "Farmer's question"} {badge(state)}</h2>
             <p>{escape(doc.get('query', ''))}</p>{urgent}
-            <h2>AI draft answer <span class='muted'>({'written by the AI model' if doc.get('generation') == 'local_llm' else 'built from the knowledge base'})</span></h2>
+            <h2>Draft answer <span class='muted'>(the matched Murimi Fara farm book entry)</span></h2>
             <div class='draft'>{render_draft(doc.get('text', ''))}</div>
             <p class='muted'>{escape(doc.get('notice', ''))}</p>
             <h2>Evidence used</h2>{sources}{extra}
@@ -284,7 +290,7 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
     @app.post("/advisory/{advisory_id}/review")
     def review(advisory_id: str, digest: str = Form(...), name: str = Form(...), decision: str = Form(...),
                reason: str = Form(...), confirmation: str = Form(...), category: str = Form("NONE"),
-               correction: str = Form(""), missing: str = Form("")):
+               correction: str = Form(""), missing: str = Form(""), correct_entry: str = Form("")):
         if decision not in {"approve", "reject"}:
             raise HTTPException(400, "Unknown decision")
         expected = f"{decision.upper()} {digest[:8]}"
@@ -300,7 +306,9 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
         if decision == "reject" and category == "NONE":
             category = "OTHER"          # a rejection always has something wrong
         try:
-            feedback.record(store, advisory_id, category, correction, missing)
+            if correct_entry and category == "NONE":
+                category = "WRONG"      # naming another entry means the condition was wrong
+            feedback.record(store, advisory_id, category, correction, missing, correct_entry)
         except ValueError as exc:
             return RedirectResponse(f"{P}/advisory/{advisory_id}?message=" + _q(
                 "Decision saved, but feedback was not: " + str(exc)), status_code=303)
@@ -344,6 +352,39 @@ def create_app(db_path, model_url=None, allow_online=False, prefix=""):
         name = f"murimi-fara-reviews-{feedback.installation_id(store)}-{datetime.now().strftime('%Y%m%d')}.json"
         return Response(body, media_type="application/json",
                         headers={"Content-Disposition": f"attachment; filename={name}"})
+
+    @app.get("/farmer-feedback")
+    def farmer_feedback():
+        """Questions farmers marked "not right" in the app (saved on this computer)."""
+        items = []
+        if farmer_feedback_path:
+            try:
+                with open(farmer_feedback_path, encoding="utf-8") as f:
+                    for line in f:
+                        try:
+                            items.append(json.loads(line))
+                        except ValueError:
+                            continue
+            except OSError:
+                pass
+        wrong = [i for i in reversed(items) if not i.get("helpful")][:200]
+        helpful = sum(1 for i in items if i.get("helpful"))
+        rows = "".join(
+            f"<tr><td>{escape(i.get('question', '')[:160])}"
+            + (f"<br><span class='muted'>Note: {escape(i.get('note', '')[:160])}</span>" if i.get("note") else "")
+            + f"</td><td>{escape(', '.join(i.get('entries') or []) or 'asked for detail')}</td>"
+            f"<td class='muted'>{escape(i.get('time', '')[:16].replace('T', ' '))}</td>"
+            f"<td><a href='{P}/?q={_q(i.get('question', ''))}'>Check it</a></td></tr>"
+            for i in wrong) or "<tr><td colspan='4' class='muted'>No 'not right' answers yet.</td></tr>"
+        return page("Farmer feedback", f"""
+            <section class='card intro'><h2>Answers farmers marked "not right"</h2>
+            <p>{len(wrong)} not right, {helpful} helpful, on this computer.</p>
+            <ol><li>Click <b>Check it</b>: the question opens, ready to draft.</li>
+            <li>Read the draft. If it is about the wrong problem, choose the <b>right farm book entry</b>
+            when you reject it.</li>
+            <li>Send the reviews file to the Murimi Fara team. Your answers teach Murimi Fara's model.</li></ol></section>
+            <section class='card'><table><tr><th>Farmer's question</th><th>Answer given (entry)</th>
+            <th>When (UTC)</th><th></th></tr>{rows}</table></section>""")
 
     @app.get("/audit")
     def audit():

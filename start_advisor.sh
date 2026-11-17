@@ -1,39 +1,15 @@
 #!/bin/bash
-# One-click launcher for Murimi Fara (Offline Farm Advisor) on Mac/Linux.
-#
-# Usage: double-click this file (if your file manager allows running
-# scripts) or run: bash start_advisor.sh
-
+# Start Murimi Fara 2.0 on Mac/Linux: bash start_advisor.sh
+# No AI model to load - it starts in seconds.
 cd "$(dirname "$0")"
-
-echo "Starting Murimi Fara (Offline Farm Advisor)..."
-echo ""
-
-# Activate the virtual environment if it exists
-if [ -d "venv" ]; then
-    source venv/bin/activate
-else
-    echo "Warning: venv not found. Trying to run with system Python instead."
-fi
-
-# Start the backend in the background, save its process ID so we can
-# tell the user how to stop it later if needed.
-uvicorn app:app --port 8000 &
-BACKEND_PID=$!
-echo "Advisor backend started (process ID: $BACKEND_PID)"
-
-echo "Waiting for the advisor to start..."
-sleep 5
-
-# Open the interface in the default browser
-if which xdg-open > /dev/null; then
-    xdg-open index.html
-elif which open > /dev/null; then
-    open index.html
-else
-    echo "Please open index.html manually in your browser."
-fi
-
-echo ""
-echo "Murimi Fara is running. Close this terminal or press Ctrl+C to stop the advisor."
-wait $BACKEND_PID
+[ -d venv ] && source venv/bin/activate
+# --host 0.0.0.0 lets phones on this computer's Wi-Fi use it too.
+python3 -m uvicorn app:app --host 0.0.0.0 --port 8000 &
+PID=$!
+sleep 3
+URL="http://127.0.0.1:8000/"
+if which xdg-open > /dev/null; then xdg-open "$URL"
+elif which open > /dev/null; then open "$URL"
+else echo "Open $URL in your browser."; fi
+echo "Murimi Fara is running. Press Ctrl+C to stop it."
+wait $PID

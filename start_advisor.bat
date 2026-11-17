@@ -2,38 +2,22 @@
 title Murimi Fara - Offline Farm Advisor
 cd /d "%~dp0"
 
-echo Starting Murimi Fara (Offline Farm Advisor)...
+echo Starting Murimi Fara 2.0 (no AI model to load - it starts in seconds)...
 echo.
-
-REM Activate the virtual environment if it exists
 if exist venv\Scripts\activate.bat (
     call venv\Scripts\activate.bat
 ) else (
     echo Warning: venv not found. Trying to run with system Python instead.
 )
 
-REM Start llama-server first — it loads the model ONCE and keeps it in
-REM memory, so questions after the first are answered quickly instead of
-REM reloading the whole model every time.
-start "Llama Server - DO NOT CLOSE while using the app" cmd /k C:\llama.cpp\llama-server.exe -m model\qwen2.5-1.5b-instruct-q4_k_m.gguf -t 4 -c 4096 --port 8080
+REM --host 0.0.0.0 lets phones on this computer's Wi-Fi/hotspot use it too.
+REM Keep the window that opens running while you use Murimi Fara.
+start "Murimi Fara - DO NOT CLOSE while using the app" cmd /k python -m uvicorn app:app --host 0.0.0.0 --port 8000
 
-echo Waiting for the model to load into memory (this can take a moment)...
-timeout /t 15 /nobreak >nul
+timeout /t 4 /nobreak >nul
+start "" "http://127.0.0.1:8000/"
 
-REM Start the backend in its own window, so this window can continue.
-REM The backend window MUST stay open while using the advisor - if it's
-REM closed, the app will show "Advisor not running."
-start "Murimi Fara Advisor - DO NOT CLOSE while using the app" cmd /k uvicorn app:app --port 8000
-
-echo Waiting for the advisor to start...
-timeout /t 5 /nobreak >nul
-
-REM Open the interface in the default browser
-start "" "index.html"
-
-echo.
-echo Murimi Fara is starting. A browser window should open shortly.
-echo Keep the other black window open while you use the advisor.
+echo Murimi Fara is open in your browser.
+echo Phones on this Wi-Fi: open the address shown at the top of the page.
 echo You can close THIS window now.
-echo.
 pause
